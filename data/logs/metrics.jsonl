@@ -1,0 +1,20 @@
+{"event": "task_end", "timestamp": "2026-03-14T21:22:04.435894Z", "task_id": "task_0_walk_forward", "robot_id": "r1_1", "result": {"success": true, "meters": 2.0}, "duration_sec": 0.31}
+{"event": "task_end", "timestamp": "2026-03-14T21:22:04.642767Z", "task_id": "task_1_turn", "robot_id": "r1_2", "result": {"success": true, "degrees": 90}, "duration_sec": 0.2}
+{"event": "task_end", "timestamp": "2026-03-14T21:22:04.848884Z", "task_id": "task_2_scan_qr", "robot_id": "r1_1", "result": {"success": true, "scanned": "placeholder", "data": null}, "duration_sec": 0.21}
+{"event": "task_end", "timestamp": "2026-03-14T21:22:04.849395Z", "task_id": "task_3_report_dashboard", "robot_id": "r1_2", "result": {"success": true, "reported": true}, "duration_sec": 0.0}
+{"event": "task_end", "timestamp": "2026-03-14T21:22:06.738949Z", "task_id": "task_0_walk_forward", "robot_id": "r1_1", "result": {"success": true, "meters": 2.0}, "duration_sec": 0.3}
+{"event": "task_end", "timestamp": "2026-03-14T21:22:06.946117Z", "task_id": "task_1_turn", "robot_id": "r1_1", "result": {"success": true, "degrees": 90}, "duration_sec": 0.21}
+{"event": "task_end", "timestamp": "2026-03-14T21:22:07.150196Z", "task_id": "task_2_scan_qr", "robot_id": "r1_1", "result": {"success": true, "scanned": "placeholder", "data": null}, "duration_sec": 0.2}
+{"event": "task_end", "timestamp": "2026-03-14T21:22:07.152037Z", "task_id": "task_3_report_dashboard", "robot_id": "r1_1", "result": {"success": true, "reported": true}, "duration_sec": 0.0}
+{"event": "task_end", "timestamp": "2026-03-14T21:35:39.596646Z", "task_id": "task_0_walk_forward", "robot_id": "r1_1", "result": {"success": true, "meters": 2.0}, "duration_sec": 0.31}
+{"event": "task_end", "timestamp": "2026-03-14T21:35:39.804966Z", "task_id": "task_1_turn", "robot_id": "r1_2", "result": {"success": true, "degrees": 90}, "duration_sec": 0.2}
+{"event": "task_end", "timestamp": "2026-03-14T21:35:40.007015Z", "task_id": "task_2_scan_qr", "robot_id": "r1_1", "result": {"success": true, "scanned": "placeholder", "data": null}, "duration_sec": 0.2}
+{"event": "task_end", "timestamp": "2026-03-14T21:35:40.007927Z", "task_id": "task_3_report_dashboard", "robot_id": "r1_2", "result": {"success": true, "reported": true}, "duration_sec": 0.0}
+{"event": "task_end", "timestamp": "2026-03-14T21:39:28.538149Z", "task_id": "task_0_walk_forward", "robot_id": "r1_1", "result": {"success": true, "meters": 2.0}, "duration_sec": 0.31}
+{"event": "task_end", "timestamp": "2026-03-14T21:39:28.739125Z", "task_id": "task_1_turn", "robot_id": "r1_1", "result": {"success": true, "degrees": 90}, "duration_sec": 0.2}
+{"event": "task_end", "timestamp": "2026-03-14T21:39:28.945297Z", "task_id": "task_2_scan_qr", "robot_id": "r1_1", "result": {"success": true, "scanned": "placeholder", "data": null}, "duration_sec": 0.21}
+{"event": "task_end", "timestamp": "2026-03-14T21:39:28.947143Z", "task_id": "task_3_report_dashboard", "robot_id": "r1_1", "result": {"success": true, "reported": true}, "duration_sec": 0.0}
+{"event": "task_end", "timestamp": "2026-03-14T21:43:39.102921Z", "task_id": "task_0_walk_forward", "robot_id": "r1_1", "result": {"success": true, "meters": 2.0}, "duration_sec": 0.3}
+{"event": "task_end", "timestamp": "2026-03-14T21:43:39.311260Z", "task_id": "task_1_turn", "robot_id": "r1_1", "result": {"success": true, "degrees": 90}, "duration_sec": 0.21}
+{"event": "task_end", "timestamp": "2026-03-14T21:43:39.517028Z", "task_id": "task_2_scan_qr", "robot_id": "r1_1", "result": {"success": true, "scanned": "placeholder", "data": null}, "duration_sec": 0.21}
+{"event": "task_end", "timestamp": "2026-03-14T21:43:39.517485Z", "task_id": "task_3_report_dashboard", "robot_id": "r1_1", "result": {"success": true, "reported": true}, "duration_sec": 0.0}

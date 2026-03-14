@@ -1,0 +1,22 @@
+# Robot Fleet — Python dependencies (Python 3.8+)
+# For full E2E with SDK/MuJoCo: after `git submodule update --init --recursive`,
+# install the SDK:  pip install -e SDK/unitree_sdk2_python
+# (CycloneDDS may need to be built separately; see SDK/README.md.)
+
+# Shared / dashboard / logging
+numpy>=1.20.0
+opencv-python>=4.5.0
+
+# MuJoCo sim (for SDK/unitree_mujoco and pilot --mujoco)
+mujoco>=3.0.0
+pygame>=2.0.0
+
+# Unitree SDK: install from repo after submodules are pulled:
+#   pip install -e SDK/unitree_sdk2_python
+# Dependencies for the SDK (install if you install the SDK):
+#   cyclonedds (often build from source; see SDK/README.md)
+
+# Development (optional)
+# pytest>=7.0.0
+# black>=23.0.0
+# ruff>=0.1.0
