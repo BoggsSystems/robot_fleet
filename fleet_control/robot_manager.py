@@ -212,6 +212,44 @@ class RobotManager:
             return False
         return True
 
+    def stand_up(self) -> bool:
+        """Command the robot to stand up. Required for humanoid stability."""
+        self._set_status(STATUS_BUSY)
+        if self.sim:
+            time.sleep(1.0)
+            self._set_status(STATUS_IDLE)
+            return True
+        
+        if not self._sport_client:
+            return False
+        try:
+            self._sport_client.StandUp()
+            time.sleep(1.0) # Give it time to complete the motion
+            self._set_status(STATUS_IDLE)
+            return True
+        except Exception:
+            self._set_status(STATUS_ERROR)
+            return False
+
+    def recovery_stand(self) -> bool:
+        """Command the robot to perform a recovery stand (e.g. after falling)."""
+        self._set_status(STATUS_BUSY)
+        if self.sim:
+            time.sleep(2.0)
+            self._set_status(STATUS_IDLE)
+            return True
+
+        if not self._sport_client:
+            return False
+        try:
+            self._sport_client.RecoveryStand()
+            time.sleep(2.0)
+            self._set_status(STATUS_IDLE)
+            return True
+        except Exception:
+            self._set_status(STATUS_ERROR)
+            return False
+
     def walk_forward(self, meters: float) -> bool:
         """Walk forward by the given distance in meters. SDK: Move(vx,0,0) then StopMove()."""
         self._set_status(STATUS_BUSY)

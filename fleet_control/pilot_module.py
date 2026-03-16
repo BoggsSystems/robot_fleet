@@ -31,6 +31,8 @@ TASK_WALK_FORWARD = "walk_forward"
 TASK_TURN = "turn"
 TASK_SCAN_QR = "scan_qr"
 TASK_REPORT_DASHBOARD = "report_dashboard"
+TASK_INVENTORY_SCAN = "inventory_scan"
+TASK_RESTOCK = "restock"
 
 # Default pilot task sequence for each robot
 DEFAULT_TASK_SPECS = [
@@ -83,12 +85,31 @@ def run_report_dashboard(robot: RobotManager, spec: dict) -> dict:
     return {"success": True, "reported": True}
 
 
+def run_inventory_scan_task(robot: RobotManager, spec: dict) -> dict:
+    """Run high-level inventory scan over zones (tasks.inventory_scan)."""
+    params = spec.get("params", {})
+    zones = params.get("zones", [{"zone_id": "default", "x": 1.0, "y": 0}])
+    from tasks.inventory_scan import run_inventory_scan
+    return run_inventory_scan(robot, zones, scan_type=params.get("scan_type", "inventory"))
+
+
+def run_restock_task(robot: RobotManager, spec: dict) -> dict:
+    """Run high-level restock from source to targets (tasks.restock)."""
+    params = spec.get("params", {})
+    source = params.get("source", {"location_id": "source", "x": 0, "y": 0})
+    targets = params.get("targets", [{"location_id": "shelf_1", "x": 1, "y": 0, "quantity": 1}])
+    from tasks.restock import run_restock
+    return run_restock(robot, source, targets, max_items=params.get("max_items"))
+
+
 # Map task type -> runner function for pilot loop
 _TASK_RUNNERS = {
     TASK_WALK_FORWARD: run_walk_forward,
     TASK_TURN: run_turn,
     TASK_SCAN_QR: run_scan_qr,
     TASK_REPORT_DASHBOARD: run_report_dashboard,
+    TASK_INVENTORY_SCAN: run_inventory_scan_task,
+    TASK_RESTOCK: run_restock_task,
 }
 
 
