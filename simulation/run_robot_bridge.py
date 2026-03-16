@@ -28,7 +28,7 @@ from threading import Thread
 # We must set config's ROBOT before importing the bridge — it reads at module level
 import config
 config.ROBOT = "g1"
-config.SIMULATE_DT = 0.005
+config.SIMULATE_DT = 0.0005 # 2000Hz for rock-solid stability
 config.VIEWER_DT = 0.02
 config.USE_JOYSTICK = False
 config.PRINT_SCENE_INFORMATION = False
@@ -75,9 +75,9 @@ class G1JointIndex:
 
 # Basic stable PD gains for G1
 # Leg indices: 0-5 (left), 6-11 (right)
-# High damping (KD) is key for simulation stability
-KP = [80, 80, 80, 150, 40, 40,  80, 80, 80, 150, 40, 40,  60, 60, 60,  40, 40, 40, 40, 40, 40, 40,  40, 40, 40, 40, 40, 40, 40]
-KD = [10, 10, 10, 20, 10, 10,  10, 10, 10, 20, 10, 10,  10, 10, 10,  5, 5, 5, 5, 5, 5, 5,  5, 5, 5, 5, 5, 5, 5]
+# Scale down KP for simulation stability with suspenders
+KP = [40, 40, 40, 80, 20, 20,   40, 40, 40, 80, 20, 20,  30, 30, 30,  20, 20, 20, 20, 20, 20, 20,  20, 20, 20, 20, 20, 20, 20]
+KD = [5, 5, 5, 10, 5, 5,        5, 5, 5, 10, 5, 5,       5, 5, 5,     2, 2, 2, 2, 2, 2, 2,     2, 2, 2, 2, 2, 2, 2]
 
 class TeleopController:
     def __init__(self, domain_id):
@@ -92,9 +92,19 @@ class TeleopController:
         self.time = 0.0
         self.dt = 0.01
         
-        # Movement state
-        self.vx = 0.3  # Start walking immediately
+        self.vx = 0.0
         self.vyaw = 0.0
+        
+        self.sweep_mode = False
+        self.sweep_start_time = 0.0
+        
+    def enable_sweep(self):
+        print("[Teleop] Sweep Mode ENABLED")
+        self.sweep_mode = True
+        self.sweep_start_time = time.time()
+        self.enabled = True
+        self.standing = True # Start by standing
+        self.vx = 0.0 
         
     def on_key(self, key):
         # MuJoCo/GLFW key codes
@@ -117,16 +127,29 @@ class TeleopController:
     def step(self):
         self.time += self.dt
         
-        # Wait 1.0s before starting to allow model to settle
-        if self.time < 1.0:
+        if not self.enabled:
             return
 
-        if not self.standing:
-            return
+        # Autonomous Sequence for Sweep Mode
+        if self.sweep_mode:
+            sweep_elapsed = time.time() - self.sweep_start_time
+            if sweep_elapsed < 3.0:
+                # 0-3s: Stand up and stabilize
+                self.standing = True
+                self.vx = 0.0
+            elif sweep_elapsed < 50.0:
+                # 3-50s: Slide mode (no walk gait, just gantry movement)
+                self.standing = True 
+                self.vx = 0.0        
+            else:
+                # 50s+: Finish
+                print("[Teleop] Sweep Complete. Stopping.")
+                self.vx = 0.0
+                self.standing = True
+                self.sweep_mode = False
 
-        # Simple procedural "wobble" walk if vx != 0
-        # Use a startup multiplier to ramp up movements over 2 seconds
-        startup_multiplier = np.clip((self.time - 1.0) / 2.0, 0.0, 1.0)
+        # Always populate motor commands if enabled
+        startup_multiplier = np.clip((self.time - 0.5) / 2.0, 0.0, 1.0)
         
         phase = self.time * 2.0 * np.pi * 1.5 # 1.5Hz
         
@@ -137,18 +160,20 @@ class TeleopController:
             self.low_cmd.motor_cmd[i].tau = 0.0
             self.low_cmd.motor_cmd[i].dq = 0.0
             
+            target_q = 0.0
+            
             # Default to stable "crouch" position (bent knees)
-            # This lowers the CoM and makes the procedural wobble much safer
             if i in [G1JointIndex.LeftKnee, G1JointIndex.RightKnee]:
                 target_q = 0.6 * startup_multiplier
             elif i in [G1JointIndex.LeftHipPitch, G1JointIndex.RightHipPitch]:
                 target_q = -0.3 * startup_multiplier
             elif i == G1JointIndex.WaistPitch:
-                target_q = 0.1 * startup_multiplier # Slight forward lean
-            else:
-                target_q = 0.0
+                target_q = 0.0 # Perfectly upright waist
+            elif i in [G1JointIndex.LeftShoulderPitch, G1JointIndex.RightShoulderPitch]:
+                target_q = 0.5 * startup_multiplier # Tuck arms a bit
             
-            if self.vx != 0:
+            # If walking (vx != 0) and not in 'standing' mode, add wobble
+            if not self.standing and self.vx != 0:
                 # Stable "shuffle" gait: small oscillations around the crouch point
                 phase_offset = 0.0 if i in [G1JointIndex.LeftKnee, G1JointIndex.LeftHipPitch] else np.pi
                 if i in [G1JointIndex.LeftKnee, G1JointIndex.RightKnee]:
@@ -161,11 +186,51 @@ class TeleopController:
         self.low_cmd.crc = self.crc.Crc(self.low_cmd)
         self.publisher.Write(self.low_cmd)
 
-# Note: PerceptionStreamer removed. Use vision_bridge.py in a separate process to avoid 
 # OpenGL context conflicts on macOS.
 
+class Suspenders(ElasticBand):
+    def __init__(self):
+        super().__init__()
+        self.stiffness = 150.0   # Solid translational hold
+        self.z_stiffness = 500.0 
+        self.damping = 150.0     
+        self.enable = True
+        self.point = np.array([0, 0, 1.15]) # Lift higher to clear floor
 
-def run_bridge(scene_path: str, domain_id: int, interface: str):
+    def Advance(self, mj_model, mj_data, body_id):
+        if not self.enable:
+            return np.zeros(6)
+            
+        x = mj_data.xpos[body_id]
+        cvel = mj_data.cvel[body_id]
+        dq = cvel[0:3] # angular velocity
+        dx = cvel[3:6] # linear velocity
+        
+        δx = self.point - x
+        f = np.zeros(6)
+        
+        # 1. Translational Force
+        f[0:2] = (self.stiffness * δx[0:2] - self.damping * dx[0:2])
+        f[2] = (self.z_stiffness * δx[2] - (self.damping * 2.0) * dx[2])
+        
+        # 2. Leveling Torque (Restores Upright posture)
+        # We extract Local Z from the body's rotation matrix (3rd column)
+        Rz = mj_data.xmat[body_id, [2, 5, 8]]
+        WorldUp = np.array([0, 0, 1])
+        
+        # Calculate corrective torque direction and magnitude
+        torque_error = np.cross(Rz, WorldUp)
+        
+        # Apply restoration torque and high angular damping
+        f[3:6] = 800.0 * torque_error - 120.0 * dq
+            
+        # NaN Guard
+        if np.any(np.isnan(f)):
+            return np.zeros(6)
+        return f
+
+
+def run_bridge(scene_path: str, domain_id: int, interface: str, sweep=False):
     print(f"[Bridge] Loading scene: {scene_path}")
     mj_model = mujoco.MjModel.from_xml_path(scene_path)
     mj_data = mujoco.MjData(mj_model)
@@ -175,8 +240,10 @@ def run_bridge(scene_path: str, domain_id: int, interface: str):
     ChannelFactoryInitialize(domain_id, interface)
     
     teleop = TeleopController(domain_id)
-    band = ElasticBand()
-    band.point = np.array([0, 0, 1.2]) # Tether height for G1
+    if sweep:
+        teleop.enable_sweep()
+    band = Suspenders()
+    band.point = np.array([0, 0, 1.1]) 
     
     def key_callback(key):
         teleop.on_key(key)
@@ -201,9 +268,28 @@ def run_bridge(scene_path: str, domain_id: int, interface: str):
             with locker:
                 # Apply Elastic Band (Virtual Tether) force
                 if config.ENABLE_ELASTIC_BAND and band.enable:
-                    mj_data.xfrc_applied[torso_id, :3] = band.Advance(
-                        mj_data.qpos[:3], mj_data.qvel[:3]
-                    )
+                    # Constant Velocity Anchor for Sweep
+                    if teleop.sweep_mode:
+                        elapsed = time.time() - teleop.sweep_start_time
+                        if elapsed > 3.0:
+                            # Move anchor forward at fixed 0.1m/s (slower is safer)
+                            band.point[0] = (elapsed - 3.0) * 0.1
+                        else:
+                            band.point[0] = 0.0
+                        
+                        if mj_data.time % 1.0 < config.SIMULATE_DT:
+                            pos_x = mj_data.xpos[torso_id][0]
+                            print(f"[Sweep] Robot X: {pos_x:.2f}m")
+                        
+                        if mj_data.time % 1.0 < config.SIMULATE_DT:
+                            print(f"[Sweep] Robot X: {mj_data.xpos[torso_id][0]:.2f}m")
+                        
+                        band.point[1] = 0.0
+                        band.point[2] = 1.15             # Match 1.15m anchor height
+                        
+                    # Apply combined force and torque to torso
+                    f_tau = band.Advance(mj_model, mj_data, torso_id)
+                    mj_data.xfrc_applied[torso_id, :] = f_tau
 
                 # Run teleop at ~100Hz (every 2 steps if dt=0.005)
                 if cnt % 2 == 0:
@@ -238,8 +324,11 @@ if __name__ == "__main__":
     parser.add_argument("--scene", required=True, help="Path to the robot's MuJoCo scene XML")
     parser.add_argument("--domain", type=int, required=True, help="DDS domain ID for this robot")
     parser.add_argument("--interface", default="lo0", help="Network interface (default: lo0 for loopback)")
+    parser.add_argument("--sweep", action="store_true", help="Start in autonomous sweep mode")
     args = parser.parse_args()
 
     # Resolve relative to current working directory (not the script dir)
     scene_path = args.scene if os.path.isabs(args.scene) else os.path.abspath(args.scene)
-    run_bridge(scene_path, args.domain, args.interface)
+    
+    # Pass sweep flag to run_bridge
+    run_bridge(scene_path, args.domain, args.interface, sweep=args.sweep)

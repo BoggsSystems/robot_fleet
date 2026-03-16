@@ -36,7 +36,12 @@ class VisionBridge:
         
         # Renderer setup (640x480)
         self.renderer = mujoco.Renderer(self.mj_model, 480, 640)
-        self.camera_id = self.mj_model.camera("head_camera").id
+        # G1 usually has head_camera. If not found, use first camera.
+        try:
+            self.camera_id = self.mj_model.camera("head_camera").id
+        except ValueError:
+            self.camera_id = 0
+            print("[Vision] 'head_camera' not found, using default camera 0")
         
         self.running = True
         self.last_sync_time = 0
