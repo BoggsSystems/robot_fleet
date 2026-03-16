@@ -20,6 +20,8 @@ or separate interfaces and init only once per (domain_id, interface).
 import math
 import threading
 import time
+import zmq
+import json
 from typing import Any, Optional
 
 # Optional SDK: allow running without unitree_sdk2_python (stub-only).
@@ -92,6 +94,8 @@ class RobotManager:
         self._last_sport_state: Any = None
         self._state_lock = threading.Lock()
         self._last_status: dict[str, Any] = {}
+        self._detections: list[str] = []
+        self._perception_sub_thread: Optional[threading.Thread] = None
 
     def connect(self) -> bool:
         """Establish connection. Stub sim: in-memory. SDK: DDS + Go2 sport client."""
@@ -120,6 +124,10 @@ class RobotManager:
                 self._state_sub = ChannelSubscriber("rt/sportmodestate", SportModeState_)
                 self._state_sub.Init(self._on_sport_state, 10)
             self._connected = True
+            
+            # Start perception subscriber thread
+            self._start_perception_subscriber()
+            
             self._last_status = {
                 "robot_id": self.robot_id,
                 "status": STATUS_IDLE,
@@ -211,6 +219,33 @@ class RobotManager:
         except Exception:
             return False
         return True
+
+    def _start_perception_subscriber(self) -> None:
+        """Start background thread to listen for perception results."""
+        def sub_loop():
+            context = zmq.Context()
+            socket = context.socket(zmq.SUB)
+            # Match perception_service.py port logic: 5555 + (domain % 100) + 10
+            port = 5555 + (self.domain_id % 100) + 10
+            socket.connect(f"tcp://localhost:{port}")
+            socket.setsockopt_string(zmq.SUBSCRIBE, "")
+            socket.setsockopt(zmq.RCVTIMEO, 1000) # 1s timeout
+            
+            while self._connected:
+                try:
+                    msg = socket.recv_string()
+                    with self._state_lock:
+                        self._detections = json.loads(msg)
+                        self._last_status["detections"] = self._detections
+                except zmq.Again:
+                    continue
+                except Exception:
+                    break
+            socket.close()
+            context.term()
+
+        self._perception_sub_thread = threading.Thread(target=sub_loop, daemon=True)
+        self._perception_sub_thread.start()
 
     def stand_up(self) -> bool:
         """Command the robot to stand up. Required for humanoid stability."""
