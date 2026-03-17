@@ -98,6 +98,13 @@ class TeleopController:
         self.sweep_mode = False
         self.sweep_start_time = 0.0
         
+        # Sanitation Mission
+        self.sanitation_mode = False
+        self.sanitation_state = "SCAN"
+        self.target_item_id = -1
+        self.bin_pos = np.array([0.5, 0.5, 1.15])
+        self.last_scan_time = 0.0
+        
     def enable_sweep(self):
         print("[Teleop] Sweep Mode ENABLED")
         self.sweep_mode = True
@@ -105,6 +112,13 @@ class TeleopController:
         self.enabled = True
         self.standing = True # Start by standing
         self.vx = 0.0 
+
+    def enable_sanitation(self):
+        print("[Teleop] Sanitation Mode ENABLED (WAITING in Hallway)")
+        self.sanitation_mode = True
+        self.sanitation_state = "WAITING"
+        self.enabled = True
+        self.standing = True
         
     def on_key(self, key):
         # MuJoCo/GLFW key codes
@@ -123,12 +137,86 @@ class TeleopController:
             self.vx = 0.0
             self.vyaw = 0.0
             print("[Teleop] Stop")
+        elif key == 71: # 'G' for Garbage Mission Start
+            if self.sanitation_mode and self.sanitation_state == "WAITING":
+                print("[Sanitation] MISSION TRIGGERED - Entering Bathroom...")
+                self.sanitation_state = "ENTERING"
 
-    def step(self):
+    def step(self, mj_model=None, mj_data=None):
         self.time += self.dt
         
         if not self.enabled:
             return
+
+        # Autonomous Sequence for Sanitation Mode (Sanitation State Machine)
+        if self.sanitation_mode and mj_data is not None:
+            if self.sanitation_state == "WAITING":
+                # Just stand still in hallway
+                self.vx = 0.0
+                self.vyaw = 0.0
+                self.standing = True
+                
+            elif self.sanitation_state == "ENTERING":
+                # Gantry handle movement to entrance
+                self.standing = False
+                self.vx = 0.4 # Active walking
+                
+            elif self.sanitation_state == "SCAN":
+                # Find nearest trash item (2Hz frequency to save CPU)
+                self.standing = True
+                self.vx = 0.0
+                
+                if mj_data.time - self.last_scan_time < 0.5:
+                    return
+                self.last_scan_time = mj_data.time
+                
+                min_dist = 100.0
+                target_id = -1
+                
+                # Check for torso bodies safely
+                torso_id = -1
+                for b_name in ["torso", "torso_link", "pelvis"]:
+                    try:
+                        torso_id = mj_model.body(b_name).id
+                        break
+                    except (ValueError, KeyError, AttributeError):
+                        continue
+                
+                if torso_id == -1:
+                    print("[Sanitation Error] Could not find robot torso for scanning.")
+                    return
+                    
+                torso_pos = mj_data.xpos[torso_id]
+                
+                for i in range(mj_model.nbody):
+                    name = mujoco.mj_id2name(mj_model, mujoco.mjtObj.mjOBJ_BODY, i)
+                    if name and name.startswith("trash_"):
+                        # Calculate distance
+                        item_pos = mj_data.xpos[i]
+                        dist = np.linalg.norm(item_pos[:2] - torso_pos[:2])
+                        if dist < min_dist:
+                            min_dist = dist
+                            target_id = i
+                
+                if target_id != -1:
+                    t_name = mujoco.mj_id2name(mj_model, mujoco.mjtObj.mjOBJ_BODY, target_id)
+                    print(f"[Sanitation] Target identified: {t_name}")
+                    self.target_item_id = target_id
+                    self.sanitation_state = "NAVIGATING"
+                else:
+                    # Keep scanning
+                    pass
+                
+            elif self.sanitation_state == "NAVIGATING":
+                # Gantry handles moving band.point
+                self.standing = True
+                self.vx = 0.0
+                
+            elif self.sanitation_state == "PICKING":
+                # Simplified: hold position
+                self.standing = True
+                self.vx = 0.0
+                pass
 
         # Autonomous Sequence for Sweep Mode
         if self.sweep_mode:
@@ -148,6 +236,14 @@ class TeleopController:
                 self.standing = True
                 self.sweep_mode = False
 
+        # Autonomous Sequence for Sanitation Mode
+        if self.sanitation_mode and self.enabled:
+            # We will use mj_data from run_bridge eventually, for now we need a way 
+            # to pass mj_data to teleop or have teleop access it.
+            # For simplicity, we'll implement the logic in run_bridge and just 
+            # use teleop to store the state.
+            pass
+
         # Always populate motor commands if enabled
         startup_multiplier = np.clip((self.time - 0.5) / 2.0, 0.0, 1.0)
         
@@ -165,8 +261,15 @@ class TeleopController:
             # Default to stable "crouch" position (bent knees)
             if i in [G1JointIndex.LeftKnee, G1JointIndex.RightKnee]:
                 target_q = 0.6 * startup_multiplier
+                if not self.standing:
+                    # Leg oscillation
+                    offset = 0.3 * np.sin(phase if i == G1JointIndex.LeftKnee else phase + np.pi)
+                    target_q += offset
             elif i in [G1JointIndex.LeftHipPitch, G1JointIndex.RightHipPitch]:
                 target_q = -0.3 * startup_multiplier
+                if not self.standing:
+                    offset = 0.2 * np.sin(phase if i == G1JointIndex.LeftHipPitch else phase + np.pi)
+                    target_q += offset
             elif i == G1JointIndex.WaistPitch:
                 target_q = 0.0 # Perfectly upright waist
             elif i in [G1JointIndex.LeftShoulderPitch, G1JointIndex.RightShoulderPitch]:
@@ -191,9 +294,9 @@ class TeleopController:
 class Suspenders(ElasticBand):
     def __init__(self):
         super().__init__()
-        self.stiffness = 150.0   # Solid translational hold
-        self.z_stiffness = 500.0 
-        self.damping = 150.0     
+        self.stiffness = 50.0   # Relaxed hold for more natural walking
+        self.z_stiffness = 400.0 
+        self.damping = 100.0     
         self.enable = True
         self.point = np.array([0, 0, 1.15]) # Lift higher to clear floor
 
@@ -230,7 +333,7 @@ class Suspenders(ElasticBand):
         return f
 
 
-def run_bridge(scene_path: str, domain_id: int, interface: str, sweep=False):
+def run_bridge(scene_path: str, domain_id: int, interface: str, sweep=False, sanitation=False):
     print(f"[Bridge] Loading scene: {scene_path}")
     mj_model = mujoco.MjModel.from_xml_path(scene_path)
     mj_data = mujoco.MjData(mj_model)
@@ -242,12 +345,39 @@ def run_bridge(scene_path: str, domain_id: int, interface: str, sweep=False):
     teleop = TeleopController(domain_id)
     if sweep:
         teleop.enable_sweep()
+    if sanitation:
+        teleop.enable_sanitation()
+    
+    # Initialize position for Sanitation mission
+    if sanitation:
+        print("[Bridge] Setting hallway starting pose...")
+        # G1 Pelvis Freejoint qpos (7 elements)
+        base_id = mj_model.joint("floating_base_joint").id
+        q_idx = mj_model.jnt_qposadr[base_id]
+        
+        # Position: X=1.93, Y=1.48, Z=0.81 (Above trash_2 inside bathroom)
+        mj_data.qpos[q_idx : q_idx+3] = np.array([1.93, 1.48, 0.81])
+        # Orientation: Facing East (X+)
+        mj_data.qpos[q_idx+3 : q_idx+7] = np.array([1, 0, 0, 0])
+        
+        # Stable Posture: Bent knees (idx 3 and 9 for leg motors)
+        # Note: We use the joint ids found in the XML previously
+        mj_data.qpos[mj_model.joint("left_knee_joint").id + 6] = 0.6
+        mj_data.qpos[mj_model.joint("right_knee_joint").id + 6] = 0.6
+        mj_data.qpos[mj_model.joint("left_hip_pitch_joint").id + 6] = -0.3
+        mj_data.qpos[mj_model.joint("right_hip_pitch_joint").id + 6] = -0.3
+        
+        mujoco.mj_forward(mj_model, mj_data)
+    
     band = Suspenders()
-    band.point = np.array([0, 0, 1.1]) 
+    if sanitation:
+        band.point = np.array([-1.5, 4.5, 1.15]) # Start closer to door
+    else:
+        band.point = np.array([0, 0, 1.1]) 
     
     def key_callback(key):
-        teleop.on_key(key)
-        band.MujuocoKeyCallback(key)
+        with locker:
+            teleop.on_key(key)
 
     viewer = mujoco.viewer.launch_passive(mj_model, mj_data, key_callback=key_callback)
     locker = threading.Lock()
@@ -287,15 +417,79 @@ def run_bridge(scene_path: str, domain_id: int, interface: str, sweep=False):
                         band.point[1] = 0.0
                         band.point[2] = 1.15             # Match 1.15m anchor height
                         
+                    elif teleop.sanitation_mode:
+                        # Dynamic Gantry Control for Sanitation
+                        if teleop.sanitation_state == "WAITING":
+                            # Hold hallway position
+                            band.point[:2] = np.array([-1.5, 4.5])
+                            band.point[2] = 1.15
+                            
+                        elif teleop.sanitation_state == "ENTERING":
+                            # Navigate towards bathroom center (1.5, 4.5)
+                            entrance_target = np.array([1.5, 4.5, 1.15])
+                            diff = entrance_target - band.point
+                            dist = np.linalg.norm(diff[:2])
+                            if dist > 0.05:
+                                dir_xy = diff[:2] / dist
+                                band.point[:2] += dir_xy * 0.005 # Snappier glide
+                            else:
+                                print("[Sanitation] Entered bathroom. Starting scan.")
+                                teleop.sanitation_state = "SCAN"
+                                
+                        elif teleop.sanitation_state == "NAVIGATING":
+                            # Target is the trash item
+                            tg_pos = mj_data.xpos[teleop.target_item_id]
+                            # Move anchor point towards target (low pass/limited speed)
+                            diff = tg_pos - band.point
+                            dist = np.linalg.norm(diff[:2])
+                            
+                            if dist > 0.1:
+                                # Slide towards trash
+                                dir_xy = diff[:2] / dist
+                                band.point[:2] += dir_xy * 0.0001 # Slow slide
+                            else:
+                                # Arrived
+                                print(f"[Sanitation] Arrived at item. Switching to PICKING.")
+                                teleop.sanitation_state = "PICKING"
+                        
+                        elif teleop.sanitation_state == "PICKING":
+                            # Lower gantry to grasp
+                            band.point[2] = 0.9 # Closer to floor
+                            # Simulate time to pick
+                            if mj_data.time % 5.0 < config.SIMULATE_DT:
+                                print(f"[Sanitation] Item collected. Returning to scan.")
+                                # Hide the 'collected' object (move it deep underground)
+                                q_addr = mj_model.jnt_qposadr[mj_model.body(teleop.target_item_id).jntadr[0]]
+                                mj_data.qpos[q_addr:q_addr+3] = np.array([0, 0, -5.0])
+                                teleop.sanitation_state = "SCAN"
+                                band.point[2] = 1.15
+                            
+                        elif teleop.sanitation_state == "DEPOSITING":
+                            # Move anchor towards bin_pos
+                            diff = teleop.bin_pos - band.point
+                            dist = np.linalg.norm(diff[:2])
+                            if dist > 0.1:
+                                dir_xy = diff[:2] / dist
+                                band.point[:2] += dir_xy * 0.0001
+                            else:
+                                print(f"[Sanitation] Arrived at bin. Depositing.")
+                                teleop.sanitation_state = "SCAN"
+                                band.point[2] = 1.15
+
                     # Apply combined force and torque to torso
                     f_tau = band.Advance(mj_model, mj_data, torso_id)
                     mj_data.xfrc_applied[torso_id, :] = f_tau
 
                 # Run teleop at ~100Hz (every 2 steps if dt=0.005)
                 if cnt % 2 == 0:
-                    teleop.step()
-                mujoco.mj_step(mj_model, mj_data)
-                cnt += 1
+                    teleop.step(mj_model, mj_data)
+                if cnt % 1000 == 0:
+                    base_pos = mj_data.xpos[torso_id]
+                    print(f"[Bridge] Robot at X={base_pos[0]:.2f}, Y={base_pos[1]:.2f}, Z={base_pos[2]:.2f} (State: {teleop.sanitation_state})")
+
+            # Physics step OUTSIDE the lock to keep GUI responsive
+            mujoco.mj_step(mj_model, mj_data)
+            cnt += 1
             
             sleep_time = mj_model.opt.timestep - (time.perf_counter() - step_start)
             if sleep_time > 0:
@@ -325,10 +519,11 @@ if __name__ == "__main__":
     parser.add_argument("--domain", type=int, required=True, help="DDS domain ID for this robot")
     parser.add_argument("--interface", default="lo0", help="Network interface (default: lo0 for loopback)")
     parser.add_argument("--sweep", action="store_true", help="Start in autonomous sweep mode")
+    parser.add_argument("--sanitation", action="store_true", help="Start in autonomous sanitation (garbage collection) mode")
     args = parser.parse_args()
 
     # Resolve relative to current working directory (not the script dir)
     scene_path = args.scene if os.path.isabs(args.scene) else os.path.abspath(args.scene)
     
-    # Pass sweep flag to run_bridge
-    run_bridge(scene_path, args.domain, args.interface, sweep=args.sweep)
+    # Pass flags to run_bridge
+    run_bridge(scene_path, args.domain, args.interface, sweep=args.sweep, sanitation=args.sanitation)

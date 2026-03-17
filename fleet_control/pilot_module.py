@@ -252,7 +252,7 @@ def main() -> int:
     elif args.mujoco:
         sim = False
         domain_id = 1
-        interface = "lo"
+        interface = "lo0"
         if not sdk_available():
             print("unitree_sdk2_python not installed. See SDK/README.md.")
             return 1
@@ -265,7 +265,7 @@ def main() -> int:
         # No flags: use SDK and default to MuJoCo (domain 1, lo) for full E2E when SDK is installed
         sim = False
         domain_id = 1
-        interface = "lo"
+        interface = "lo0"
     else:
         if args.mujoco or args.interface:
             print("unitree_sdk2_python not installed. Install from SDK/unitree_sdk2_python (see SDK/README.md).")
