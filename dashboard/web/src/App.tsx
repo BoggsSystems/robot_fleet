@@ -1,13 +1,73 @@
 import { useState, useEffect } from 'react'
-import { Activity, Battery, CheckCircle, Clock } from 'lucide-react'
+import { Activity, Battery, Plus, LogOut, User, Settings, Package, Activity as ActivityIcon, Sparkles } from 'lucide-react'
+import { LoginScreen } from './components/auth/LoginScreen'
+import { OnboardingWizard } from './components/onboarding/OnboardingWizard'
+import { FleetManager } from './components/fleet/FleetManager'
+import { ClientManager } from './components/clients/ClientManager'
+import { ProvisioningDashboard } from './components/provisioning/ProvisioningDashboard'
+import { OperationsCenter } from './components/operations/OperationsCenter'
+import { SalesFunnel } from './components/sales/SalesFunnel'
+import { LeadManager } from './components/leads/LeadManager'
+import type { RobotConfig, Fleet } from './components/onboarding/OnboardingWizard'
 import './App.css'
 
-function App() {
-  const [fleetStatus, setFleetStatus] = useState(null)
-  const [connecting, setConnecting] = useState(true)
+interface User {
+  email: string
+  name: string
+  role: string
+}
 
+interface FleetStatus {
+  robots: Array<{
+    robot_id: string;
+    fleet_status: string;
+    battery: number;
+    pose: { x: number; y: number; theta: number };
+    robot_type?: string;
+    robot_category?: string;
+    vendor?: string;
+    zone?: string;
+  }>;
+  active_tasks: Array<{
+    robot_id: string;
+    task_id: string;
+  }>;
+  completed_tasks: Array<{
+    robot_id: string;
+    task_id: string;
+    result?: { scanned_items?: string[] };
+  }>;
+}
+
+function App() {
+  // Auth state
+  const [user, setUser] = useState<User | null>(null)
+  
+  // Fleet state
+  const [fleetStatus, setFleetStatus] = useState<FleetStatus | null>(null)
+  const [connecting, setConnecting] = useState(true)
+  const [showOnboarding, setShowOnboarding] = useState(false)
+  const [showFleetManager, setShowFleetManager] = useState(false)
+  const [showClientManager, setShowClientManager] = useState(false)
+  const [showProvisioning, setShowProvisioning] = useState(false)
+  const [showOperationsCenter, setShowOperationsCenter] = useState(false)
+  const [showSalesFunnel, setShowSalesFunnel] = useState(false)
+  const [showLeadManager, setShowLeadManager] = useState(false)
+  const [selectedFleet, setSelectedFleet] = useState<Fleet | null>(null)
+  const [existingRobots, setExistingRobots] = useState<string[]>([])
+
+  // Check for stored session on mount
   useEffect(() => {
-    // Connect to the FastAPI WebSocket server
+    const storedUser = localStorage.getItem('fleet_user')
+    if (storedUser) {
+      setUser(JSON.parse(storedUser))
+    }
+  }, [])
+
+  // Connect to WebSocket when logged in
+  useEffect(() => {
+    if (!user) return
+
     const ws = new WebSocket('ws://localhost:8000/ws')
 
     ws.onopen = () => {
@@ -19,6 +79,9 @@ function App() {
       try {
         const data = JSON.parse(event.data)
         setFleetStatus(data)
+        if (data.robots) {
+          setExistingRobots(data.robots.map((r: any) => r.robot_id))
+        }
       } catch (e) {
         console.error('Failed to parse telemetry', e)
       }
@@ -31,131 +94,299 @@ function App() {
     return () => {
       ws.close()
     }
-  }, [])
+  }, [user])
 
-  if (connecting || !fleetStatus) {
+  const handleLogin = (userData: User) => {
+    setUser(userData)
+    localStorage.setItem('fleet_user', JSON.stringify(userData))
+  }
+
+  const handleLogout = () => {
+    setUser(null)
+    localStorage.removeItem('fleet_user')
+    setFleetStatus(null)
+  }
+
+  const handleOnboardingComplete = async (config: RobotConfig) => {
+    // Register the new robot
+    try {
+      const response = await fetch('/api/robots/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(config),
+      })
+      
+      if (response.ok) {
+        setExistingRobots(prev => [...prev, config.robotId])
+        setShowOnboarding(false)
+      } else {
+        console.error('Failed to register robot')
+      }
+    } catch (err) {
+      console.error('Error registering robot:', err)
+    }
+  }
+
+  const handleOnboardingCancel = () => {
+    setShowOnboarding(false)
+  }
+
+  // Show Lead Manager
+  if (showLeadManager) {
     return (
-      <div className="loading-container">
-        <Activity className="spinner" size={48} />
-        <h2>Connecting to Fleet Simulator...</h2>
+      <LeadManager 
+        onLeadSelect={(lead) => {
+          console.log('Lead selected:', lead)
+          // Could navigate to lead details or open modal
+        }}
+        onConvertToClient={(lead) => {
+          console.log('Lead converted to client:', lead)
+          // Could add to client database
+        }}
+      />
+    )
+  }
+
+  // Show Sales Funnel
+  if (showSalesFunnel) {
+    return (
+      <SalesFunnel 
+        onComplete={(lead) => {
+          console.log('Lead completed:', lead)
+          setShowSalesFunnel(false)
+        }}
+      />
+    )
+  }
+
+  // Show Client Manager
+  if (showClientManager) {
+    return (
+      <div className="dashboard">
+        <header className="header">
+          <div className="header-left">
+            <h1>Robot Fleet Dashboard</h1>
+          </div>
+          <div className="header-right">
+            <button className="btn-secondary" onClick={() => setShowClientManager(false)}>
+              Back to Dashboard
+            </button>
+          </div>
+        </header>
+        <ClientManager onCancel={() => setShowClientManager(false)} />
       </div>
     )
   }
 
-  // Group active tasks by robot for easier display
-  const tasksByRobot = {}
+  // Show Provisioning Dashboard
+  if (showProvisioning) {
+    return (
+      <div className="dashboard">
+        <header className="header">
+          <div className="header-left">
+            <h1>Robot Fleet Dashboard</h1>
+          </div>
+          <div className="header-right">
+            <button className="btn-secondary" onClick={() => setShowProvisioning(false)}>
+              Back to Dashboard
+            </button>
+          </div>
+        </header>
+        <ProvisioningDashboard onCancel={() => setShowProvisioning(false)} />
+      </div>
+    )
+  }
+
+  // Show Operations Center
+  if (showOperationsCenter) {
+    return (
+      <div className="dashboard">
+        <header className="header">
+          <div className="header-left">
+            <h1>Robot Fleet Dashboard</h1>
+          </div>
+          <div className="header-right">
+            <button className="btn-secondary" onClick={() => setShowOperationsCenter(false)}>
+              Back to Dashboard
+            </button>
+          </div>
+        </header>
+        <OperationsCenter onCancel={() => setShowOperationsCenter(false)} />
+      </div>
+    )
+  }
+
+  // Show fleet manager
+  if (showFleetManager) {
+    return (
+      <div className="dashboard">
+        <header className="header">
+          <div className="header-left">
+            <h1>Robot Fleet Dashboard</h1>
+          </div>
+          <div className="header-right">
+            <button className="btn-secondary" onClick={() => setShowFleetManager(false)}>
+              Back to Dashboard
+            </button>
+          </div>
+        </header>
+        <FleetManager onCancel={() => setShowFleetManager(false)} />
+      </div>
+    )
+  }
+
+  // Show login screen if not authenticated
+  if (!user) {
+    return <LoginScreen onLogin={handleLogin} />
+  }
+
+  // Show onboarding wizard when triggered
+  if (showOnboarding) {
+    return (
+      <OnboardingWizard
+        onComplete={handleOnboardingComplete}
+        onCancel={handleOnboardingCancel}
+        existingRobots={existingRobots}
+      />
+    )
+  }
+
+  // Loading state
+  if (connecting || !fleetStatus) {
+    return (
+      <div className="loading-container">
+        <Activity className="spinner" size={48} />
+        <h2>Connecting to Fleet Telemetry...</h2>
+      </div>
+    )
+  }
+
+  // Coordinate conversion (kept for future use)
+  const toMapCoordX = (x: number) => `${((x + 3) / 6) * 100}%`
+  const toMapCoordY = (y: number) => `${((y + 3) / 6) * 100}%`
+
+  // Tasks by robot (kept for future use)
+  const tasksByRobot: Record<string, {robot_id: string; task_id: string}> = {}
   fleetStatus.active_tasks.forEach(t => {
     tasksByRobot[t.robot_id] = t
   })
 
-  // Normalize MuJoCo coordinates (-3 to 3) to SVG percentages (0% to 100%)
-  // SVG origin is top-left. Our simulator warehouse is basically 6x6 meters.
-  // x=-3 -> 0%, x=0 -> 50%, x=3 -> 100%
-  // y=-3 -> 0%, y=0 -> 50%, y=3 -> 100%
-  const toMapCoordX = (x) => `${((x + 3) / 6) * 100}%`
-  const toMapCoordY = (y) => `${((y + 3) / 6) * 100}%`
-
   return (
     <div className="dashboard">
       <header className="header">
-        <h1>Unitree R1 Fleet Dashboard</h1>
-        <div className="status-badge live">
-          <span className="dot"></span> LIVE TELEMETRY
+        <div className="header-left">
+          <h1>Robot Fleet Dashboard</h1>
+          <div className="status-badge live">
+            <span className="dot"></span> LIVE
+          </div>
+        </div>
+        <div className="header-right">
+          <div className="admin-menu">
+            <button className="btn-admin" onClick={() => setShowLeadManager(true)}>
+              <User size={16} />
+              Leads
+            </button>
+            <button className="btn-admin" onClick={() => setShowSalesFunnel(true)}>
+              <Sparkles size={16} />
+              Sales Funnel
+            </button>
+            <button className="btn-admin" onClick={() => setShowClientManager(true)}>
+              <User size={16} />
+              Clients
+            </button>
+            <button className="btn-admin" onClick={() => setShowFleetManager(true)}>
+              <Settings size={16} />
+              Fleets
+            </button>
+            <button className="btn-admin" onClick={() => setShowProvisioning(true)}>
+              <Package size={16} />
+              Inventory
+            </button>
+            <button className="btn-admin" onClick={() => setShowOperationsCenter(true)}>
+              <ActivityIcon size={16} />
+              Operations
+            </button>
+          </div>
+          <div className="user-info">
+            <User size={16} />
+            <span>{user.name}</span>
+          </div>
+          <button className="add-robot-btn" onClick={() => setShowOnboarding(true)}>
+            <Plus size={16} />
+            Add Robot
+          </button>
+          <button className="logout-btn" onClick={handleLogout}>
+            <LogOut size={16} />
+            Logout
+          </button>
         </div>
       </header>
 
-      <div className="grid">
-        {/* Left Column: Fleet Overview */}
-        <div className="panel fleet-panel">
-          <h2>Active Fleet</h2>
-          <div className="robot-cards">
-            {fleetStatus.robots.map(robot => {
-              const task = tasksByRobot[robot.robot_id]
-              return (
-                <div key={robot.robot_id} className={`robot-card ${robot.fleet_status}`}>
-                  <div className="card-header">
-                    <h3>{robot.robot_id}</h3>
-                    <span className={`status ${robot.fleet_status}`}>
-                      {robot.fleet_status.toUpperCase()}
-                    </span>
-                  </div>
-                  
-                  <div className="metrics">
-                    <div className="metric">
-                      <Battery size={16} />
-                      <span>{robot.battery}%</span>
-                    </div>
-                    {task && (
-                      <div className="metric task">
-                        <Clock size={16} />
-                        <span>{task.task_id}</span>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="pose-stats">
-                    <small>X: {(robot.pose?.x || 0).toFixed(2)}</small>
-                    <small>Y: {(robot.pose?.y || 0).toFixed(2)}</small>
-                    <small>Heading: {(robot.pose?.theta || 0).toFixed(0)}°</small>
-                  </div>
-                </div>
-              )
-            })}
+      <div className="dashboard-content">
+        {fleetStatus.robots.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-icon">🤖</div>
+            <h2>No Robots in Fleet</h2>
+            <p>Get started by adding your first robot to the system.</p>
+            <button className="btn-add-first" onClick={() => setShowOnboarding(true)}>
+              <Plus size={24} />
+              Add Your First Robot
+            </button>
           </div>
-        </div>
-
-        {/* Center: Live Warehouse Map */}
-        <div className="panel map-panel">
-          <h2>Warehouse Layout</h2>
-          <div className="map-container">
-            {/* Dark grid background */}
-            <div className="map-grid">
-               {/* Fixed Shelves from our MuJoCo XML */}
-               {/* Shelf 1: center x=-2.0, size=0.5x3 */}
-               <div className="shelf" style={{ left: '12.5%', top: '25%', width: '8.3%', height: '50%' }}></div>
-               {/* Shelf 2: center x=2.0, size=0.5x3 */}
-               <div className="shelf" style={{ left: '79.1%', top: '25%', width: '8.3%', height: '50%' }}></div>
-               
-               {/* Real-time robot markers */}
-               {fleetStatus.robots.map(robot => (
-                 <div 
-                   key={robot.robot_id}
-                   className="robot-marker"
-                   style={{
-                     left: toMapCoordX(robot.pose.x),
-                     top: toMapCoordY(robot.pose.y),
-                     transform: `translate(-50%, -50%) rotate(${-(robot.pose.theta - 90)}deg)` // Note: DOM rot is clockwise, sim theta may differ
-                   }}
-                 >
-                   <div className="robot-dot"></div>
-                   <span className="robot-label">{robot.robot_id}</span>
-                 </div>
-               ))}
+        ) : (
+          <div className="robot-table-container">
+            <div className="table-header">
+              <h2>Fleet Overview</h2>
+              <span className="count">{fleetStatus.robots.length} robots registered</span>
             </div>
+            <table className="robot-table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Robot ID</th>
+                  <th>Category</th>
+                  <th>Vendor</th>
+                  <th>Status</th>
+                  <th>Battery</th>
+                  <th>Zone</th>
+                </tr>
+              </thead>
+              <tbody>
+                {fleetStatus.robots.map(robot => {
+                  const typeIcon = robot.robot_category === 'Humanoid' ? '🤖' :
+                                  robot.robot_category === 'Quadruped' ? '🐕' :
+                                  robot.robot_category === 'Wheeled' ? '🔄' : '⚙️'
+                  return (
+                    <tr key={robot.robot_id}>
+                      <td className="type-cell">
+                        <span className="type-icon">{typeIcon}</span>
+                      </td>
+                      <td className="id-cell">{robot.robot_id}</td>
+                      <td>
+                        <span className="category-badge">{robot.robot_type || robot.robot_category}</span>
+                      </td>
+                      <td>
+                        <span className="vendor-badge">{robot.vendor}</span>
+                      </td>
+                      <td>
+                        <span className={`status-badge-table ${robot.fleet_status}`}>
+                          {robot.fleet_status}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="battery-cell">
+                          <Battery size={14} />
+                          <span>{robot.battery}%</span>
+                        </div>
+                      </td>
+                      <td>{robot.zone || '—'}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
           </div>
-        </div>
-
-        {/* Right Column: Task Log */}
-        <div className="panel log-panel">
-          <h2>Completion Log</h2>
-          <div className="log-list">
-            {fleetStatus.completed_tasks.length === 0 ? (
-              <p className="empty-log">Awaiting completions...</p>
-            ) : (
-              fleetStatus.completed_tasks.map((task, i) => (
-                <div key={i} className="log-entry">
-                  <CheckCircle size={16} color="#10b981" />
-                  <div className="log-content">
-                    <strong>{task.robot_id}</strong> completed <em>{task.task_id}</em>
-                    <br/>
-                    <small>{task.result?.scanned_items?.length || 0} zones audited</small>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
+        )}
       </div>
     </div>
   )
