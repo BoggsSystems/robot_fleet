@@ -22,6 +22,8 @@ if str(_PROJECT_ROOT) not in sys.path:
 
 from data import log_utils
 from fleet_control.controller import FleetController
+from fleet_control.edge_bridge import InMemoryEventSink
+from fleet_control.mock_twin import LocalTwinProjector
 from fleet_control.robot_manager import RobotManager, sdk_available
 
 # -----------------------------------------------------------------------------
@@ -118,6 +120,9 @@ def run_single_task(
     robot_id: str,
     task_id: str,
     task_spec: dict,
+    *,
+    projector: LocalTwinProjector | None = None,
+    sink: InMemoryEventSink | None = None,
 ) -> dict:
     """
     Execute one task on the given robot: get robot from controller,
@@ -134,6 +139,17 @@ def run_single_task(
 
     log_utils.log_task_start(task_id, robot_id, task_spec)
     log_utils.log_robot_status(robot_id, {"status": "busy", "task_id": task_id})
+    started = controller.make_task_status_event(
+        robot_id,
+        task_id,
+        "started",
+        summary=f"Started {task_spec.get('type', 'task')}",
+        details={"task_spec": task_spec},
+    )
+    if sink:
+        sink.publish(f"fleet/tasks/{robot_id}/started", started)
+    if projector:
+        projector.ingest(started)
 
     start = time.perf_counter()
     try:
@@ -145,6 +161,31 @@ def run_single_task(
     log_utils.log_task_end(task_id, robot_id, result, duration)
     controller.report_task_done(robot_id, task_id, result)
     log_utils.log_robot_status(robot_id, {"status": "idle", "last_task": task_id})
+
+    completed = controller.make_task_status_event(
+        robot_id,
+        task_id,
+        "completed" if result.get("success") else "failed",
+        summary=f"Finished {task_spec.get('type', 'task')}",
+        details={"task_spec": task_spec, "result": result, "duration_sec": round(duration, 3)},
+    )
+    if sink:
+        sink.publish(f"fleet/tasks/{robot_id}/completed", completed)
+    if projector:
+        projector.ingest(completed)
+
+    if not result.get("success"):
+        alert = controller.make_alert_event(
+            robot_id,
+            severity="warning",
+            code="task_failure",
+            message=f"Task {task_id} failed",
+            details={"task_id": task_id, "result": result},
+        )
+        if sink:
+            sink.publish(f"fleet/alerts/{robot_id}", alert)
+        if projector:
+            projector.ingest(alert)
 
     return result
 

@@ -11,6 +11,14 @@ report_task_done() to coordinate 1–2 robots and track idle/busy/completed.
 """
 
 from .robot_manager import RobotManager, STATUS_IDLE, STATUS_BUSY, STATUS_COMPLETED
+from .config import LocalRuntimeConfig
+from .events import (
+    CanonicalEvent,
+    RobotAlertPayload,
+    RobotTaskStatusPayload,
+    event_from_payload,
+    make_metadata,
+)
 
 
 class FleetController:
@@ -20,11 +28,13 @@ class FleetController:
     Tracks per-robot status: idle, busy, completed.
     """
 
-    def __init__(self):
+    def __init__(self, runtime_config: LocalRuntimeConfig | None = None):
         self._robots: dict[str, RobotManager] = {}
         self._robot_status: dict[str, str] = {}  # robot_id -> idle|busy|completed
         self._active_tasks: list[dict] = []  # { task_id, robot_id, spec }
         self._completed_tasks: list[dict] = []
+        self._runtime_config = runtime_config or LocalRuntimeConfig()
+        self._event_sequence = 0
 
     def register_robot(self, robot_id: str, robot_manager: RobotManager | None = None, **kwargs) -> RobotManager:
         """
@@ -85,6 +95,61 @@ class FleetController:
         TODO: Implement for fully autonomous loop; pilot currently drives via assign_task + report_task_done.
         """
         pass
+
+    def make_task_status_event(
+        self,
+        robot_id: str,
+        task_id: str,
+        task_status: str,
+        *,
+        summary: str,
+        details: dict | None = None,
+    ) -> CanonicalEvent:
+        """Create a canonical task lifecycle event for projections and telemetry."""
+        payload = RobotTaskStatusPayload(
+            task_id=task_id,
+            task_status=task_status,
+            summary=summary,
+            details=details or {},
+        )
+        return event_from_payload(
+            self._next_metadata("robot.task_status", robot_id),
+            payload,
+        )
+
+    def make_alert_event(
+        self,
+        robot_id: str,
+        *,
+        severity: str,
+        code: str,
+        message: str,
+        details: dict | None = None,
+    ) -> CanonicalEvent:
+        """Create a canonical alert event."""
+        payload = RobotAlertPayload(
+            severity=severity,
+            code=code,
+            message=message,
+            details=details or {},
+        )
+        return event_from_payload(
+            self._next_metadata("robot.alert", robot_id),
+            payload,
+        )
+
+    def _next_metadata(self, event_type: str, robot_id: str):
+        self._event_sequence += 1
+        return make_metadata(
+            event_type=event_type,
+            source="fleet.controller",
+            robot_id=robot_id,
+            fleet_id=self._runtime_config.fleet_id,
+            site_id=self._runtime_config.site_id,
+            tenant_id=self._runtime_config.tenant_id,
+            schema_version=self._runtime_config.schema_version,
+            sequence=self._event_sequence,
+        )
 
 
 # AI extension point: Add functions for multi-robot optimization,

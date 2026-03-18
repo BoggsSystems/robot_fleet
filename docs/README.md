@@ -1,7 +1,14 @@
 # Docs
 
-Place architecture diagrams, user guides, and API documentation here.
+Architecture, contracts, user guides, and API documentation live here.
 
-- **Architecture**: System overview, fleet_control ↔ tasks ↔ SDK flow.
-- **User guides**: Setup, running pilots, adding new tasks.
-- **API**: Robot manager and controller interfaces (when stabilized).
+- **Architecture**: `/Users/jeffboggs/robot_fleet/docs/architecture`
+- **Contracts**: `/Users/jeffboggs/robot_fleet/docs/contracts`
+- **User guides**: setup, running pilots, adding new tasks
+- **API**: robot manager and controller interfaces when stabilized
+
+Current implementation status:
+
+- Phase 0 architecture baseline is documented under `docs/architecture`
+- Phase 1 local event contracts and twin scaffolding are implemented in `fleet_control`
+- The first DTDL model draft lives in `docs/contracts/unitree-g1.json`

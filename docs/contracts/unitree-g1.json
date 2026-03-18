@@ -1,0 +1,86 @@
+{
+  "@id": "dtmi:boggssystems:robotfleet:UnitreeG1;1",
+  "@type": "Interface",
+  "@context": [
+    "dtmi:dtdl:context;3"
+  ],
+  "displayName": "Unitree G1 Robot",
+  "description": "Operational twin model for a Unitree G1 humanoid in the Boggs Systems fleet platform.",
+  "contents": [
+    {
+      "@type": "Property",
+      "name": "robotId",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "fleetId",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "siteId",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "status",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "robotType",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "robotCategory",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "vendor",
+      "schema": "string"
+    },
+    {
+      "@type": "Property",
+      "name": "batteryPct",
+      "schema": "double"
+    },
+    {
+      "@type": "Property",
+      "name": "lastEventAt",
+      "schema": "dateTime"
+    },
+    {
+      "@type": "Component",
+      "name": "health",
+      "schema": "dtmi:boggssystems:robotfleet:RobotHealth;1"
+    },
+    {
+      "@type": "Component",
+      "name": "pose",
+      "schema": "dtmi:boggssystems:robotfleet:Pose2D;1"
+    },
+    {
+      "@type": "Component",
+      "name": "tasks",
+      "schema": "dtmi:boggssystems:robotfleet:TaskState;1"
+    },
+    {
+      "@type": "Relationship",
+      "name": "belongsToFleet",
+      "target": "dtmi:boggssystems:robotfleet:Fleet;1"
+    },
+    {
+      "@type": "Relationship",
+      "name": "locatedAtSite",
+      "target": "dtmi:boggssystems:robotfleet:Site;1"
+    },
+    {
+      "@type": "Relationship",
+      "name": "assignedToTask",
+      "target": "dtmi:boggssystems:robotfleet:Task;1"
+    }
+  ]
+}
