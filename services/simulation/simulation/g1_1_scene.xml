@@ -1,0 +1,24 @@
+<mujoco model="g1_1_warehouse">
+  <compiler angle="radian" meshdir="../SDK/unitree_mujoco/unitree_robots/g1/meshes"/>
+  <option timestep="0.005" gravity="0 0 -9.81"/>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1=".3 .5 .7" rgb2="0 0 0" width="512" height="512"/>
+    <texture name="texplane" type="2d" builtin="checker" rgb1=".2 .3 .4" rgb2=".1 .15 .2" width="512" height="512" mark="cross" markrgb=".8 .8 .8"/>
+    <material name="matplane" reflectance="0.3" texture="texplane" texrepeat="1 1" texuniform="true"/>
+    <material name="shelf_mat" rgba="0.6 0.6 0.6 1"/>
+  </asset>
+
+  <worldbody>
+    <light directional="true" diffuse=".8 .8 .8" specular=".2 .2 .2" pos="0 0 5" dir="0 0 -1"/>
+    <geom name="floor" pos="0 0 0" size="10 10 .125" type="plane" material="matplane" rgba="0.8 0.9 0.8 1"/>
+
+    <!-- Warehouse Shelf 1 (Left) -->
+    <geom name="shelf_1" type="box" size="0.5 3.0 1.0" pos="-2.0 0.0 1.0" material="shelf_mat"/>
+    <!-- Warehouse Shelf 2 (Right) -->
+    <geom name="shelf_2" type="box" size="0.5 3.0 1.0" pos="2.0 0.0 1.0" material="shelf_mat"/>
+
+    <!-- Robot 1 — spawns slightly to the right -->
+    <include file="../SDK/unitree_mujoco/unitree_robots/g1/g1_23dof.xml"/>
+  </worldbody>
+</mujoco>

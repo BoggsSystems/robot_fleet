@@ -1,0 +1,240 @@
+[
+  {
+    "@id": "dtmi:boggssystems:cottagedomain:Location;1",
+    "@type": "Interface",
+    "@context": "dtmi:dtdl:context;3",
+    "displayName": "Location",
+    "description": "Base location within a cottage property graph.",
+    "contents": [
+      { "@type": "Property", "name": "siteId", "schema": "string" },
+      { "@type": "Property", "name": "name", "schema": "string" },
+      { "@type": "Property", "name": "locationType", "schema": "string" },
+      { "@type": "Property", "name": "status", "schema": "string" },
+      { "@type": "Property", "name": "lastUpdatedAt", "schema": "dateTime" }
+    ]
+  },
+  {
+    "@id": "dtmi:boggssystems:cottagedomain:Site;1",
+    "@type": "Interface",
+    "@context": "dtmi:dtdl:context;3",
+    "displayName": "Cottage Site",
+    "description": "Top-level operational twin for a cottage property.",
+    "contents": [
+      { "@type": "Property", "name": "siteId", "schema": "string" },
+      { "@type": "Property", "name": "name", "schema": "string" },
+      { "@type": "Property", "name": "status", "schema": "string" },
+      { "@type": "Property", "name": "timezone", "schema": "string" },
+      { "@type": "Property", "name": "weatherSummary", "schema": "string" },
+      { "@type": "Property", "name": "lastUpdatedAt", "schema": "dateTime" },
+      {
+        "@type": "Relationship",
+        "name": "containsLocation",
+        "target": "dtmi:boggssystems:cottagedomain:Location;1"
+      },
+      {
+        "@type": "Relationship",
+        "name": "containsRobot",
+        "target": "dtmi:boggssystems:cottagedomain:Robot;1"
+      },
+      {
+        "@type": "Relationship",
+        "name": "containsBoat",
+        "target": "dtmi:boggssystems:cottagedomain:Boat;1"
+      }
+    ]
+  },
+  {
+    "@id": "dtmi:boggssystems:cottagedomain:Zone;1",
+    "@type": "Interface",
+    "@context": "dtmi:dtdl:context;3",
+    "extends": "dtmi:boggssystems:cottagedomain:Location;1",
+    "displayName": "Zone",
+    "description": "Outdoor operational zone such as landing, trail, or yard.",
+    "contents": [
+      { "@type": "Property", "name": "surfaceType", "schema": "string" },
+      { "@type": "Property", "name": "hazardLevel", "schema": "string" },
+      {
+        "@type": "Relationship",
+        "name": "connectedTo",
+        "target": "dtmi:boggssystems:cottagedomain:Location;1"
+      }
+    ]
+  },
+  {
+    "@id": "dtmi:boggssystems:cottagedomain:PathSegment;1",
+    "@type": "Interface",
+    "@context": "dtmi:dtdl:context;3",
+    "extends": "dtmi:boggssystems:cottagedomain:Location;1",
+    "displayName": "Path Segment",
+    "description": "Traversable segment between zones, dock, or building entrances.",
+    "contents": [
+      { "@type": "Property", "name": "distanceMeters", "schema": "double" },
+      { "@type": "Property", "name": "gradePct", "schema": "double" },
+      { "@type": "Property", "name": "isStairAccess", "schema": "boolean" },
+      {
+        "@type": "Relationship",
+        "name": "connectedTo",
+        "target": "dtmi:boggssystems:cottagedomain:Location;1"
+      }
+    ]
+  },
+  {
+    "@id": "dtmi:boggssystems:cottagedomain:Building;1",
+    "@type": "Interface",
+    "@context": "dtmi:dtdl:context;3",
+    "extends": "dtmi:boggssystems:cottagedomain:Location;1",
+    "displayName": "Building",
+    "description": "A structure on the site, such as the main cottage or shed.",
+    "contents": [
+      { "@type": "Property", "name": "buildingType", "schema": "string" },
+      {
+        "@type": "Relationship",
+        "name": "containsRoom",
+        "target": "dtmi:boggssystems:cottagedomain:Room;1"
+      }
+    ]
+  },
+  {
+    "@id": "dtmi:boggssystems:cottagedomain:Room;1",
+    "@type": "Interface",
+    "@context": "dtmi:dtdl:context;3",
+    "extends": "dtmi:boggssystems:cottagedomain:Location;1",
+    "displayName": "Room",
+    "description": "Interior space inside a building.",
+    "contents": [
+      { "@type": "Property", "name": "roomType", "schema": "string" },
+      { "@type": "Property", "name": "floorLabel", "schema": "string" },
+      {
+        "@type": "Relationship",
+        "name": "connectedTo",
+        "target": "dtmi:boggssystems:cottagedomain:Location;1"
+      }
+    ]
+  },
+  {
+    "@id": "dtmi:boggssystems:cottagedomain:Dock;1",
+    "@type": "Interface",
+    "@context": "dtmi:dtdl:context;3",
+    "extends": "dtmi:boggssystems:cottagedomain:Location;1",
+    "displayName": "Dock",
+    "description": "Dock or shoreline handoff point for boats and cargo.",
+    "contents": [
+      { "@type": "Property", "name": "dockStatus", "schema": "string" },
+      { "@type": "Property", "name": "waterAccessType", "schema": "string" },
+      {
+        "@type": "Relationship",
+        "name": "servesBoat",
+        "target": "dtmi:boggssystems:cottagedomain:Boat;1"
+      }
+    ]
+  },
+  {
+    "@id": "dtmi:boggssystems:cottagedomain:Robot;1",
+    "@type": "Interface",
+    "@context": "dtmi:dtdl:context;3",
+    "displayName": "Cottage Robot",
+    "description": "Operational twin for a robot assigned to a cottage site.",
+    "contents": [
+      { "@type": "Property", "name": "robotId", "schema": "string" },
+      { "@type": "Property", "name": "siteId", "schema": "string" },
+      { "@type": "Property", "name": "name", "schema": "string" },
+      { "@type": "Property", "name": "status", "schema": "string" },
+      { "@type": "Property", "name": "batteryPct", "schema": "double" },
+      { "@type": "Property", "name": "connectivity", "schema": "string" },
+      { "@type": "Property", "name": "healthStatus", "schema": "string" },
+      { "@type": "Property", "name": "robotType", "schema": "string" },
+      { "@type": "Property", "name": "robotCategory", "schema": "string" },
+      { "@type": "Property", "name": "currentTaskId", "schema": "string" },
+      { "@type": "Property", "name": "lastUpdatedAt", "schema": "dateTime" },
+      {
+        "@type": "Relationship",
+        "name": "locatedAt",
+        "target": "dtmi:boggssystems:cottagedomain:Location;1"
+      },
+      {
+        "@type": "Relationship",
+        "name": "assignedToTask",
+        "target": "dtmi:boggssystems:cottagedomain:Task;1"
+      }
+    ]
+  },
+  {
+    "@id": "dtmi:boggssystems:cottagedomain:Boat;1",
+    "@type": "Interface",
+    "@context": "dtmi:dtdl:context;3",
+    "displayName": "Service Boat",
+    "description": "Boat used for deliveries and cargo handoffs.",
+    "contents": [
+      { "@type": "Property", "name": "boatId", "schema": "string" },
+      { "@type": "Property", "name": "status", "schema": "string" },
+      { "@type": "Property", "name": "eta", "schema": "dateTime" },
+      { "@type": "Property", "name": "availability", "schema": "string" },
+      { "@type": "Property", "name": "cargoCapacity", "schema": "integer" },
+      { "@type": "Property", "name": "lastUpdatedAt", "schema": "dateTime" },
+      {
+        "@type": "Relationship",
+        "name": "locatedAt",
+        "target": "dtmi:boggssystems:cottagedomain:Dock;1"
+      }
+    ]
+  },
+  {
+    "@id": "dtmi:boggssystems:cottagedomain:Cargo;1",
+    "@type": "Interface",
+    "@context": "dtmi:dtdl:context;3",
+    "displayName": "Cargo",
+    "description": "Package or supply item moving through the cottage workflow.",
+    "contents": [
+      { "@type": "Property", "name": "cargoId", "schema": "string" },
+      { "@type": "Property", "name": "status", "schema": "string" },
+      { "@type": "Property", "name": "weightKg", "schema": "double" },
+      { "@type": "Property", "name": "priority", "schema": "string" },
+      { "@type": "Property", "name": "lastUpdatedAt", "schema": "dateTime" },
+      {
+        "@type": "Relationship",
+        "name": "locatedAt",
+        "target": "dtmi:boggssystems:cottagedomain:Location;1"
+      },
+      {
+        "@type": "Relationship",
+        "name": "assignedToTask",
+        "target": "dtmi:boggssystems:cottagedomain:Task;1"
+      }
+    ]
+  },
+  {
+    "@id": "dtmi:boggssystems:cottagedomain:Task;1",
+    "@type": "Interface",
+    "@context": "dtmi:dtdl:context;3",
+    "displayName": "Cottage Task",
+    "description": "Operational task assigned to robots, boat movements, or inspections.",
+    "contents": [
+      { "@type": "Property", "name": "taskId", "schema": "string" },
+      { "@type": "Property", "name": "taskType", "schema": "string" },
+      { "@type": "Property", "name": "taskStatus", "schema": "string" },
+      { "@type": "Property", "name": "priority", "schema": "string" },
+      { "@type": "Property", "name": "summary", "schema": "string" },
+      { "@type": "Property", "name": "lastUpdatedAt", "schema": "dateTime" }
+    ]
+  },
+  {
+    "@id": "dtmi:boggssystems:cottagedomain:Alert;1",
+    "@type": "Interface",
+    "@context": "dtmi:dtdl:context;3",
+    "displayName": "Operational Alert",
+    "description": "Alert, hazard, or operator-attention condition for the site.",
+    "contents": [
+      { "@type": "Property", "name": "alertId", "schema": "string" },
+      { "@type": "Property", "name": "severity", "schema": "string" },
+      { "@type": "Property", "name": "code", "schema": "string" },
+      { "@type": "Property", "name": "message", "schema": "string" },
+      { "@type": "Property", "name": "status", "schema": "string" },
+      { "@type": "Property", "name": "lastUpdatedAt", "schema": "dateTime" },
+      {
+        "@type": "Relationship",
+        "name": "affectsLocation",
+        "target": "dtmi:boggssystems:cottagedomain:Location;1"
+      }
+    ]
+  }
+]

@@ -1,0 +1,523 @@
+{
+  "modelVersion": "2026-03-19",
+  "siteId": "site--parents-cottage",
+  "name": "Parents Cottage Operational Site Model",
+  "timezone": "America/Toronto",
+  "source": "Manual authoring from operator description",
+  "sites": [
+    {
+      "id": "site--whitby-home",
+      "name": "Whitby Home",
+      "siteType": "origin_property",
+      "description": "Parents house in Whitby where cargo is staged before road transport."
+    },
+    {
+      "id": "site--parents-cottage",
+      "name": "Parents Cottage",
+      "siteType": "destination_property",
+      "description": "Lake-access cottage property north of Parry Sound."
+    }
+  ],
+  "nodes": [
+    {
+      "id": "zone--whitby-home--interior-staging",
+      "siteId": "site--whitby-home",
+      "label": "Whitby Interior Staging",
+      "nodeType": "zone",
+      "environment": "indoor",
+      "workflowRole": "origin_staging",
+      "cargoStaging": true,
+      "humanLoadingRequired": true,
+      "notes": "Groceries and cargo are gathered inside the house before loading."
+    },
+    {
+      "id": "zone--whitby-home--driveway-truck-bay",
+      "siteId": "site--whitby-home",
+      "label": "Whitby Driveway Truck Bay",
+      "nodeType": "handoff_zone",
+      "environment": "outdoor",
+      "workflowRole": "truck_loading",
+      "cargoStaging": true,
+      "humanLoadingRequired": true,
+      "notes": "Cargo is loaded from the house into the truck here."
+    },
+    {
+      "id": "zone--regional-route--woods-road-turn",
+      "siteId": "site--parents-cottage",
+      "label": "Woods Road Turnoff",
+      "nodeType": "waypoint",
+      "environment": "outdoor",
+      "workflowRole": "road_waypoint",
+      "notes": "Road waypoint north of Parry Sound before the final drive to landing."
+    },
+    {
+      "id": "zone--parents-cottage--landing-truck-bay",
+      "siteId": "site--parents-cottage",
+      "label": "Landing Truck Bay",
+      "aliases": ["landing"],
+      "nodeType": "handoff_zone",
+      "environment": "outdoor",
+      "workflowRole": "truck_unload",
+      "cargoStaging": true,
+      "humanLoadingRequired": true,
+      "notes": "Truck is unloaded and cargo is prepared for boat loading."
+    },
+    {
+      "id": "dock--parents-cottage--landing-boat-ramp",
+      "siteId": "site--parents-cottage",
+      "label": "Landing Boat Ramp",
+      "nodeType": "dock",
+      "environment": "outdoor",
+      "workflowRole": "boat_loading",
+      "cargoStaging": true,
+      "boatAccess": true,
+      "notes": "Cargo is transferred from truck-side staging into the boat here."
+    },
+    {
+      "id": "path--parents-cottage--water-route",
+      "siteId": "site--parents-cottage",
+      "label": "Landing To Island Water Route",
+      "nodeType": "water_route",
+      "environment": "water",
+      "workflowRole": "boat_transit",
+      "estimatedTransitMinutes": 10,
+      "notes": "Boat route from landing to the island dock."
+    },
+    {
+      "id": "dock--parents-cottage--main-dock",
+      "siteId": "site--parents-cottage",
+      "label": "Main Dock",
+      "aliases": ["dock", "main dock"],
+      "nodeType": "dock",
+      "environment": "outdoor",
+      "workflowRole": "boat_unload",
+      "cargoStaging": true,
+      "boatAccess": true,
+      "notes": "Primary dock where cargo is unloaded from the boat."
+    },
+    {
+      "id": "path--parents-cottage--dock-walkway",
+      "siteId": "site--parents-cottage",
+      "label": "Dock Walkway",
+      "nodeType": "path_segment",
+      "environment": "outdoor",
+      "workflowRole": "dock_transition",
+      "surfaceType": "dock_boardwalk",
+      "widthClass": "medium",
+      "notes": "Boardwalk section along the dock to reach the square dock area."
+    },
+    {
+      "id": "zone--parents-cottage--square-dock-area",
+      "siteId": "site--parents-cottage",
+      "label": "Square Dock Area",
+      "nodeType": "handoff_zone",
+      "environment": "outdoor",
+      "workflowRole": "dock_handoff",
+      "cargoStaging": true,
+      "notes": "More open dock section after the initial walkway."
+    },
+    {
+      "id": "path--parents-cottage--narrow-walkway",
+      "siteId": "site--parents-cottage",
+      "label": "Narrow Walkway",
+      "nodeType": "path_segment",
+      "environment": "outdoor",
+      "workflowRole": "shore_transition",
+      "surfaceType": "narrow_boardwalk",
+      "distanceFeet": 60,
+      "widthClass": "narrow",
+      "notes": "Approximate 60-foot narrow walkway from dock area toward the island path."
+    },
+    {
+      "id": "zone--parents-cottage--island-path-entry",
+      "siteId": "site--parents-cottage",
+      "label": "Island Path Entry",
+      "nodeType": "zone",
+      "environment": "outdoor",
+      "workflowRole": "path_start",
+      "notes": "Transition point from boardwalk to the natural island path."
+    },
+    {
+      "id": "path--parents-cottage--natural-path",
+      "siteId": "site--parents-cottage",
+      "label": "Natural Cottage Path",
+      "aliases": ["path", "trail", "natural path"],
+      "nodeType": "path_segment",
+      "environment": "outdoor",
+      "workflowRole": "upland_approach",
+      "surfaceType": "natural_trail",
+      "gradeClass": "mild_to_medium_uphill",
+      "hazards": [
+        "tree_roots",
+        "rocks",
+        "seasonal_obstacles"
+      ],
+      "notes": "Natural uphill path toward the cottage. Usually passable, but roots and rocks can appear."
+    },
+    {
+      "id": "zone--parents-cottage--deck-stairs",
+      "siteId": "site--parents-cottage",
+      "label": "Deck Stairs",
+      "nodeType": "transition",
+      "environment": "outdoor",
+      "workflowRole": "vertical_transition",
+      "stairCount": 3,
+      "notes": "Approximate three steps from path to deck."
+    },
+    {
+      "id": "zone--parents-cottage--deck",
+      "siteId": "site--parents-cottage",
+      "label": "Deck",
+      "nodeType": "zone",
+      "environment": "outdoor",
+      "workflowRole": "deck_arrival",
+      "notes": "Exterior deck immediately above the stairs."
+    },
+    {
+      "id": "room--parents-cottage--screened-dining-area",
+      "siteId": "site--parents-cottage",
+      "label": "Screened Dining Area",
+      "nodeType": "room",
+      "environment": "screened_outdoor",
+      "workflowRole": "weather_buffer",
+      "notes": "Enclosed eating area that is semi-outdoor and sits between deck and main door."
+    },
+    {
+      "id": "room--parents-cottage--entry-foyer",
+      "siteId": "site--parents-cottage",
+      "label": "Entry Foyer",
+      "aliases": ["entry", "foyer", "entry way", "entryway"],
+      "nodeType": "room",
+      "environment": "indoor",
+      "workflowRole": "indoor_entry",
+      "notes": "Small entry area for shoes and coats immediately inside the main door."
+    },
+    {
+      "id": "room--parents-cottage--dining-room",
+      "siteId": "site--parents-cottage",
+      "label": "Dining Room",
+      "aliases": ["dining room"],
+      "nodeType": "room",
+      "environment": "indoor",
+      "workflowRole": "interior_handoff",
+      "cargoStaging": true,
+      "notes": "Dining table can be used as a grocery drop or staging surface."
+    },
+    {
+      "id": "room--parents-cottage--kitchen",
+      "siteId": "site--parents-cottage",
+      "label": "Kitchen",
+      "aliases": ["kitchen"],
+      "nodeType": "room",
+      "environment": "indoor",
+      "workflowRole": "cargo_destination",
+      "notes": "Primary grocery destination inside the cottage."
+    },
+    {
+      "id": "fixture--parents-cottage--fridge",
+      "siteId": "site--parents-cottage",
+      "label": "Fridge",
+      "nodeType": "fixture",
+      "environment": "indoor",
+      "workflowRole": "cold_storage_destination",
+      "notes": "Approximate destination if groceries are taken directly to refrigerated storage."
+    },
+    {
+      "id": "room--parents-cottage--living-room",
+      "siteId": "site--parents-cottage",
+      "label": "Living Room",
+      "nodeType": "room",
+      "environment": "indoor",
+      "workflowRole": "shared_space",
+      "notes": "Contains seating, TV, couch, side table, and fireplace structure."
+    },
+    {
+      "id": "room--parents-cottage--hallway",
+      "siteId": "site--parents-cottage",
+      "label": "Hallway",
+      "aliases": ["hallway", "main floor", "main-floor"],
+      "nodeType": "room",
+      "environment": "indoor",
+      "workflowRole": "bedroom_access",
+      "notes": "Hall connecting living room and kitchen to storage and bedrooms."
+    },
+    {
+      "id": "room--parents-cottage--laundry-storage",
+      "siteId": "site--parents-cottage",
+      "label": "Laundry And Storage Room",
+      "nodeType": "room",
+      "environment": "indoor",
+      "workflowRole": "utility_room",
+      "notes": "Room with storage plus washer and dryer."
+    },
+    {
+      "id": "room--parents-cottage--bedroom-left-front",
+      "siteId": "site--parents-cottage",
+      "label": "Front Left Bedroom",
+      "nodeType": "room",
+      "environment": "indoor",
+      "workflowRole": "bedroom",
+      "notes": "First bedroom on the left from the hallway."
+    },
+    {
+      "id": "room--parents-cottage--main-bedroom",
+      "siteId": "site--parents-cottage",
+      "label": "Main Bedroom",
+      "nodeType": "room",
+      "environment": "indoor",
+      "workflowRole": "bedroom",
+      "notes": "Bedroom at the far left end of the hallway."
+    },
+    {
+      "id": "fixture--parents-cottage--hall-cabinet",
+      "siteId": "site--parents-cottage",
+      "label": "Hall Cabinet",
+      "nodeType": "fixture",
+      "environment": "indoor",
+      "workflowRole": "storage_fixture",
+      "notes": "Cabinet believed to be at the end of the hallway."
+    },
+    {
+      "id": "room--parents-cottage--bedroom-right-rear",
+      "siteId": "site--parents-cottage",
+      "label": "Rear Right Bedroom",
+      "nodeType": "room",
+      "environment": "indoor",
+      "workflowRole": "bedroom",
+      "notes": "Bedroom on the right at the end of the hallway."
+    }
+  ],
+  "edges": [
+    {
+      "from": "zone--whitby-home--interior-staging",
+      "to": "zone--whitby-home--driveway-truck-bay",
+      "edgeType": "cargo_handoff",
+      "workflowSegment": "house_to_truck",
+      "transportMode": "human_carry",
+      "notes": "Cargo is carried from inside the house to the truck."
+    },
+    {
+      "from": "zone--whitby-home--driveway-truck-bay",
+      "to": "zone--regional-route--woods-road-turn",
+      "edgeType": "vehicle_route",
+      "workflowSegment": "road_transport",
+      "transportMode": "truck",
+      "notes": "Long drive from Whitby toward the Parry Sound region."
+    },
+    {
+      "from": "zone--regional-route--woods-road-turn",
+      "to": "zone--parents-cottage--landing-truck-bay",
+      "edgeType": "vehicle_route",
+      "workflowSegment": "landing_approach",
+      "transportMode": "truck",
+      "estimatedTransitMinutes": 15,
+      "notes": "Approximate final drive from Woods Road turnoff to the landing."
+    },
+    {
+      "from": "zone--parents-cottage--landing-truck-bay",
+      "to": "dock--parents-cottage--landing-boat-ramp",
+      "edgeType": "cargo_handoff",
+      "workflowSegment": "truck_to_boat_staging",
+      "transportMode": "human_carry",
+      "notes": "Cargo is carried from truck unloading area to boat loading point."
+    },
+    {
+      "from": "dock--parents-cottage--landing-boat-ramp",
+      "to": "path--parents-cottage--water-route",
+      "edgeType": "boat_departure",
+      "workflowSegment": "boat_launch",
+      "transportMode": "boat"
+    },
+    {
+      "from": "path--parents-cottage--water-route",
+      "to": "dock--parents-cottage--main-dock",
+      "edgeType": "boat_arrival",
+      "workflowSegment": "boat_arrival",
+      "transportMode": "boat"
+    },
+    {
+      "from": "dock--parents-cottage--main-dock",
+      "to": "path--parents-cottage--dock-walkway",
+      "edgeType": "connected_to",
+      "workflowSegment": "dock_exit",
+      "transportMode": "walk_or_robot"
+    },
+    {
+      "from": "path--parents-cottage--dock-walkway",
+      "to": "zone--parents-cottage--square-dock-area",
+      "edgeType": "connected_to",
+      "workflowSegment": "dock_transition",
+      "transportMode": "walk_or_robot"
+    },
+    {
+      "from": "zone--parents-cottage--square-dock-area",
+      "to": "path--parents-cottage--narrow-walkway",
+      "edgeType": "connected_to",
+      "workflowSegment": "dock_to_shore",
+      "transportMode": "walk_or_robot"
+    },
+    {
+      "from": "path--parents-cottage--narrow-walkway",
+      "to": "zone--parents-cottage--island-path-entry",
+      "edgeType": "connected_to",
+      "workflowSegment": "shore_transition",
+      "transportMode": "walk_or_robot"
+    },
+    {
+      "from": "zone--parents-cottage--island-path-entry",
+      "to": "path--parents-cottage--natural-path",
+      "edgeType": "connected_to",
+      "workflowSegment": "upland_approach",
+      "transportMode": "walk_or_robot"
+    },
+    {
+      "from": "path--parents-cottage--natural-path",
+      "to": "zone--parents-cottage--deck-stairs",
+      "edgeType": "connected_to",
+      "workflowSegment": "stairs_approach",
+      "transportMode": "walk_or_robot"
+    },
+    {
+      "from": "zone--parents-cottage--deck-stairs",
+      "to": "zone--parents-cottage--deck",
+      "edgeType": "stairs",
+      "workflowSegment": "deck_access",
+      "transportMode": "walk_or_robot",
+      "verticalTransition": true
+    },
+    {
+      "from": "zone--parents-cottage--deck",
+      "to": "room--parents-cottage--screened-dining-area",
+      "edgeType": "connected_to",
+      "workflowSegment": "weather_buffer_entry",
+      "transportMode": "walk_or_robot"
+    },
+    {
+      "from": "room--parents-cottage--screened-dining-area",
+      "to": "room--parents-cottage--entry-foyer",
+      "edgeType": "doorway",
+      "workflowSegment": "main_entry",
+      "transportMode": "walk_or_robot"
+    },
+    {
+      "from": "room--parents-cottage--entry-foyer",
+      "to": "room--parents-cottage--dining-room",
+      "edgeType": "connected_to",
+      "workflowSegment": "interior_entry",
+      "transportMode": "walk_or_robot"
+    },
+    {
+      "from": "room--parents-cottage--dining-room",
+      "to": "room--parents-cottage--kitchen",
+      "edgeType": "connected_to",
+      "workflowSegment": "food_storage_route",
+      "transportMode": "walk_or_robot"
+    },
+    {
+      "from": "room--parents-cottage--kitchen",
+      "to": "fixture--parents-cottage--fridge",
+      "edgeType": "service_access",
+      "workflowSegment": "cold_storage_route",
+      "transportMode": "walk_or_robot",
+      "distanceFeet": 40,
+      "notes": "Approximate path from entry through kitchen to fridge."
+    },
+    {
+      "from": "room--parents-cottage--entry-foyer",
+      "to": "room--parents-cottage--living-room",
+      "edgeType": "connected_to",
+      "workflowSegment": "living_room_route",
+      "transportMode": "walk_or_robot"
+    },
+    {
+      "from": "room--parents-cottage--living-room",
+      "to": "room--parents-cottage--hallway",
+      "edgeType": "connected_to",
+      "workflowSegment": "bedroom_hall_access",
+      "transportMode": "walk_or_robot"
+    },
+    {
+      "from": "room--parents-cottage--kitchen",
+      "to": "room--parents-cottage--hallway",
+      "edgeType": "connected_to",
+      "workflowSegment": "service_hall_access",
+      "transportMode": "walk_or_robot"
+    },
+    {
+      "from": "room--parents-cottage--hallway",
+      "to": "room--parents-cottage--laundry-storage",
+      "edgeType": "doorway",
+      "workflowSegment": "utility_access",
+      "transportMode": "walk_or_robot",
+      "notes": "First door on the right."
+    },
+    {
+      "from": "room--parents-cottage--hallway",
+      "to": "room--parents-cottage--bedroom-left-front",
+      "edgeType": "doorway",
+      "workflowSegment": "bedroom_access",
+      "transportMode": "walk_or_robot",
+      "notes": "First door on the left."
+    },
+    {
+      "from": "room--parents-cottage--hallway",
+      "to": "room--parents-cottage--main-bedroom",
+      "edgeType": "doorway",
+      "workflowSegment": "bedroom_access",
+      "transportMode": "walk_or_robot",
+      "notes": "Second door on the left at the hallway end."
+    },
+    {
+      "from": "room--parents-cottage--hallway",
+      "to": "fixture--parents-cottage--hall-cabinet",
+      "edgeType": "service_access",
+      "workflowSegment": "storage_access",
+      "transportMode": "walk_or_robot"
+    },
+    {
+      "from": "room--parents-cottage--hallway",
+      "to": "room--parents-cottage--bedroom-right-rear",
+      "edgeType": "doorway",
+      "workflowSegment": "bedroom_access",
+      "transportMode": "walk_or_robot",
+      "notes": "Bedroom on the right at the hallway end."
+    }
+  ],
+  "workflowRoutes": [
+    {
+      "id": "route--groceries--whitby-to-kitchen",
+      "label": "Groceries From Whitby To Cottage Kitchen",
+      "routeType": "cargo_delivery",
+      "nodes": [
+        "zone--whitby-home--interior-staging",
+        "zone--whitby-home--driveway-truck-bay",
+        "zone--regional-route--woods-road-turn",
+        "zone--parents-cottage--landing-truck-bay",
+        "dock--parents-cottage--landing-boat-ramp",
+        "path--parents-cottage--water-route",
+        "dock--parents-cottage--main-dock",
+        "path--parents-cottage--dock-walkway",
+        "zone--parents-cottage--square-dock-area",
+        "path--parents-cottage--narrow-walkway",
+        "zone--parents-cottage--island-path-entry",
+        "path--parents-cottage--natural-path",
+        "zone--parents-cottage--deck-stairs",
+        "zone--parents-cottage--deck",
+        "room--parents-cottage--screened-dining-area",
+        "room--parents-cottage--entry-foyer",
+        "room--parents-cottage--dining-room",
+        "room--parents-cottage--kitchen",
+        "fixture--parents-cottage--fridge"
+      ]
+    },
+    {
+      "id": "route--laundry--hallway-to-utility",
+      "label": "Hallway To Laundry And Storage",
+      "routeType": "utility_service",
+      "nodes": [
+        "room--parents-cottage--hallway",
+        "room--parents-cottage--laundry-storage"
+      ]
+    }
+  ]
+}

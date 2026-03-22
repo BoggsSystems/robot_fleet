@@ -1,0 +1,27 @@
+Mon Mar 16 14:29:04 2026
+WARNING: Nan, Inf or huge value in QACC at DOF 0. The simulation is unstable. Time = 0.5050.
+
+Mon Mar 16 16:06:53 2026
+WARNING: Nan, Inf or huge value in QACC at DOF 1. The simulation is unstable. Time = 124.5850.
+
+Mon Mar 16 16:23:14 2026
+WARNING: Nan, Inf or huge value in QACC at DOF 3. The simulation is unstable. Time = 9.0300.
+
+Mon Mar 16 16:25:15 2026
+WARNING: Nan, Inf or huge value in QACC at DOF 8. The simulation is unstable. Time = 4.8350.
+
+Mon Mar 16 17:24:50 2026
+WARNING: Nan, Inf or huge value in QACC at DOF 0. The simulation is unstable. Time = 0.1200.
+
+Mon Mar 16 17:26:01 2026
+WARNING: Nan, Inf or huge value in QACC at DOF 3. The simulation is unstable. Time = 0.1550.
+
+Mon Mar 16 21:36:25 2026
+ERROR: mj_copyDataVisual: attempting to copy mjData while stack is in use
+
+Tue Mar 17 11:34:15 2026
+ERROR: mj_copyDataVisual: attempting to copy mjData while stack is in use
+
+Tue Mar 17 12:05:55 2026
+ERROR: mj_copyDataVisual: attempting to copy mjData while stack is in use
+

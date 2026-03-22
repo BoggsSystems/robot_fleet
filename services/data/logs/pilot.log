@@ -1,0 +1,245 @@
+2026-03-14 17:22:04,129 | task.task_0_walk_forward.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'walk_forward', 'params': {'meters': 2.0}}
+2026-03-14 17:22:04,130 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_0_walk_forward'}
+2026-03-14 17:22:04,435 | task.task_0_walk_forward.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'meters': 2.0} | duration_sec=0.31
+2026-03-14 17:22:04,437 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_0_walk_forward'}
+2026-03-14 17:22:04,437 | task.task_1_turn.r1_2 | INFO | TASK_START | robot_id=r1_2 | spec={'type': 'turn', 'params': {'degrees': 90}}
+2026-03-14 17:22:04,437 | task.fleet.r1_2 | DEBUG | ROBOT_STATUS | robot_id=r1_2 | status={'status': 'busy', 'task_id': 'task_1_turn'}
+2026-03-14 17:22:04,642 | task.task_1_turn.r1_2 | INFO | TASK_END | robot_id=r1_2 | result={'success': True, 'degrees': 90} | duration_sec=0.20
+2026-03-14 17:22:04,643 | task.fleet.r1_2 | DEBUG | ROBOT_STATUS | robot_id=r1_2 | status={'status': 'idle', 'last_task': 'task_1_turn'}
+2026-03-14 17:22:04,643 | task.task_2_scan_qr.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'scan_qr', 'params': {'target': 'inventory_item_placeholder'}}
+2026-03-14 17:22:04,643 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_2_scan_qr'}
+2026-03-14 17:22:04,848 | task.task_2_scan_qr.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'scanned': 'placeholder', 'data': None} | duration_sec=0.21
+2026-03-14 17:22:04,849 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_2_scan_qr'}
+2026-03-14 17:22:04,849 | task.task_3_report_dashboard.r1_2 | INFO | TASK_START | robot_id=r1_2 | spec={'type': 'report_dashboard', 'params': {}}
+2026-03-14 17:22:04,849 | task.fleet.r1_2 | DEBUG | ROBOT_STATUS | robot_id=r1_2 | status={'status': 'busy', 'task_id': 'task_3_report_dashboard'}
+2026-03-14 17:22:04,849 | task.task_3_report_dashboard.r1_2 | INFO | TASK_END | robot_id=r1_2 | result={'success': True, 'reported': True} | duration_sec=0.00
+2026-03-14 17:22:04,849 | task.fleet.r1_2 | DEBUG | ROBOT_STATUS | robot_id=r1_2 | status={'status': 'idle', 'last_task': 'task_3_report_dashboard'}
+2026-03-14 17:22:06,435 | task.task_0_walk_forward.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'walk_forward', 'params': {'meters': 2.0}}
+2026-03-14 17:22:06,435 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_0_walk_forward'}
+2026-03-14 17:22:06,738 | task.task_0_walk_forward.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'meters': 2.0} | duration_sec=0.30
+2026-03-14 17:22:06,739 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_0_walk_forward'}
+2026-03-14 17:22:06,739 | task.task_1_turn.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'turn', 'params': {'degrees': 90}}
+2026-03-14 17:22:06,739 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_1_turn'}
+2026-03-14 17:22:06,945 | task.task_1_turn.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'degrees': 90} | duration_sec=0.21
+2026-03-14 17:22:06,946 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_1_turn'}
+2026-03-14 17:22:06,947 | task.task_2_scan_qr.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'scan_qr', 'params': {'target': 'inventory_item_placeholder'}}
+2026-03-14 17:22:06,947 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_2_scan_qr'}
+2026-03-14 17:22:07,149 | task.task_2_scan_qr.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'scanned': 'placeholder', 'data': None} | duration_sec=0.20
+2026-03-14 17:22:07,150 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_2_scan_qr'}
+2026-03-14 17:22:07,151 | task.task_3_report_dashboard.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'report_dashboard', 'params': {}}
+2026-03-14 17:22:07,151 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_3_report_dashboard'}
+2026-03-14 17:22:07,151 | task.task_3_report_dashboard.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'reported': True} | duration_sec=0.00
+2026-03-14 17:22:07,152 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_3_report_dashboard'}
+2026-03-14 17:35:39,290 | task.task_0_walk_forward.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'walk_forward', 'params': {'meters': 2.0}}
+2026-03-14 17:35:39,290 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_0_walk_forward'}
+2026-03-14 17:35:39,596 | task.task_0_walk_forward.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'meters': 2.0} | duration_sec=0.31
+2026-03-14 17:35:39,599 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_0_walk_forward'}
+2026-03-14 17:35:39,599 | task.task_1_turn.r1_2 | INFO | TASK_START | robot_id=r1_2 | spec={'type': 'turn', 'params': {'degrees': 90}}
+2026-03-14 17:35:39,600 | task.fleet.r1_2 | DEBUG | ROBOT_STATUS | robot_id=r1_2 | status={'status': 'busy', 'task_id': 'task_1_turn'}
+2026-03-14 17:35:39,804 | task.task_1_turn.r1_2 | INFO | TASK_END | robot_id=r1_2 | result={'success': True, 'degrees': 90} | duration_sec=0.20
+2026-03-14 17:35:39,805 | task.fleet.r1_2 | DEBUG | ROBOT_STATUS | robot_id=r1_2 | status={'status': 'idle', 'last_task': 'task_1_turn'}
+2026-03-14 17:35:39,806 | task.task_2_scan_qr.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'scan_qr', 'params': {'target': 'inventory_item_placeholder'}}
+2026-03-14 17:35:39,806 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_2_scan_qr'}
+2026-03-14 17:35:40,006 | task.task_2_scan_qr.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'scanned': 'placeholder', 'data': None} | duration_sec=0.20
+2026-03-14 17:35:40,007 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_2_scan_qr'}
+2026-03-14 17:35:40,007 | task.task_3_report_dashboard.r1_2 | INFO | TASK_START | robot_id=r1_2 | spec={'type': 'report_dashboard', 'params': {}}
+2026-03-14 17:35:40,007 | task.fleet.r1_2 | DEBUG | ROBOT_STATUS | robot_id=r1_2 | status={'status': 'busy', 'task_id': 'task_3_report_dashboard'}
+2026-03-14 17:35:40,007 | task.task_3_report_dashboard.r1_2 | INFO | TASK_END | robot_id=r1_2 | result={'success': True, 'reported': True} | duration_sec=0.00
+2026-03-14 17:35:40,008 | task.fleet.r1_2 | DEBUG | ROBOT_STATUS | robot_id=r1_2 | status={'status': 'idle', 'last_task': 'task_3_report_dashboard'}
+2026-03-14 17:39:28,232 | task.task_0_walk_forward.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'walk_forward', 'params': {'meters': 2.0}}
+2026-03-14 17:39:28,232 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_0_walk_forward'}
+2026-03-14 17:39:28,538 | task.task_0_walk_forward.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'meters': 2.0} | duration_sec=0.31
+2026-03-14 17:39:28,538 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_0_walk_forward'}
+2026-03-14 17:39:28,538 | task.task_1_turn.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'turn', 'params': {'degrees': 90}}
+2026-03-14 17:39:28,538 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_1_turn'}
+2026-03-14 17:39:28,739 | task.task_1_turn.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'degrees': 90} | duration_sec=0.20
+2026-03-14 17:39:28,739 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_1_turn'}
+2026-03-14 17:39:28,739 | task.task_2_scan_qr.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'scan_qr', 'params': {'target': 'inventory_item_placeholder'}}
+2026-03-14 17:39:28,739 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_2_scan_qr'}
+2026-03-14 17:39:28,944 | task.task_2_scan_qr.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'scanned': 'placeholder', 'data': None} | duration_sec=0.21
+2026-03-14 17:39:28,945 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_2_scan_qr'}
+2026-03-14 17:39:28,946 | task.task_3_report_dashboard.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'report_dashboard', 'params': {}}
+2026-03-14 17:39:28,946 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_3_report_dashboard'}
+2026-03-14 17:39:28,947 | task.task_3_report_dashboard.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'reported': True} | duration_sec=0.00
+2026-03-14 17:39:28,947 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_3_report_dashboard'}
+2026-03-14 17:43:38,799 | task.task_0_walk_forward.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'walk_forward', 'params': {'meters': 2.0}}
+2026-03-14 17:43:38,799 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_0_walk_forward'}
+2026-03-14 17:43:39,102 | task.task_0_walk_forward.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'meters': 2.0} | duration_sec=0.30
+2026-03-14 17:43:39,104 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_0_walk_forward'}
+2026-03-14 17:43:39,104 | task.task_1_turn.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'turn', 'params': {'degrees': 90}}
+2026-03-14 17:43:39,104 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_1_turn'}
+2026-03-14 17:43:39,311 | task.task_1_turn.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'degrees': 90} | duration_sec=0.21
+2026-03-14 17:43:39,311 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_1_turn'}
+2026-03-14 17:43:39,311 | task.task_2_scan_qr.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'scan_qr', 'params': {'target': 'inventory_item_placeholder'}}
+2026-03-14 17:43:39,311 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_2_scan_qr'}
+2026-03-14 17:43:39,516 | task.task_2_scan_qr.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'scanned': 'placeholder', 'data': None} | duration_sec=0.21
+2026-03-14 17:43:39,517 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_2_scan_qr'}
+2026-03-14 17:43:39,517 | task.task_3_report_dashboard.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'report_dashboard', 'params': {}}
+2026-03-14 17:43:39,517 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_3_report_dashboard'}
+2026-03-14 17:43:39,517 | task.task_3_report_dashboard.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'reported': True} | duration_sec=0.00
+2026-03-14 17:43:39,517 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_3_report_dashboard'}
+2026-03-14 17:50:37,941 | task.task_0_walk_forward.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'walk_forward', 'params': {'meters': 2.0}}
+2026-03-14 17:50:37,941 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_0_walk_forward'}
+2026-03-14 17:50:38,246 | task.task_0_walk_forward.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'meters': 2.0} | duration_sec=0.31
+2026-03-14 17:50:38,250 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_0_walk_forward'}
+2026-03-14 17:50:38,250 | task.task_1_turn.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'turn', 'params': {'degrees': 90}}
+2026-03-14 17:50:38,250 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_1_turn'}
+2026-03-14 17:50:38,456 | task.task_1_turn.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'degrees': 90} | duration_sec=0.21
+2026-03-14 17:50:38,456 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_1_turn'}
+2026-03-14 17:50:38,457 | task.task_2_scan_qr.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'scan_qr', 'params': {'target': 'inventory_item_placeholder'}}
+2026-03-14 17:50:38,457 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_2_scan_qr'}
+2026-03-14 17:50:38,662 | task.task_2_scan_qr.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'scanned': 'placeholder', 'data': None} | duration_sec=0.21
+2026-03-14 17:50:38,662 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_2_scan_qr'}
+2026-03-14 17:50:38,662 | task.task_3_report_dashboard.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'report_dashboard', 'params': {}}
+2026-03-14 17:50:38,662 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_3_report_dashboard'}
+2026-03-14 17:50:38,663 | task.task_3_report_dashboard.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'reported': True} | duration_sec=0.00
+2026-03-14 17:50:38,663 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_3_report_dashboard'}
+2026-03-14 17:50:50,932 | task.run_tasks_inventory_scan.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'task': 'inventory_scan'}
+2026-03-14 17:50:51,195 | task.run_tasks_restock.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'task': 'restock'}
+2026-03-14 17:50:52,463 | task.run_tasks_inventory_scan.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'scanned_items': [{'zone_id': 'A1', 'success': True, 'data': None, 'scanned': 'placeholder'}, {'zone_id': 'A2', 'success': True, 'data': None, 'scanned': 'placeholder'}], 'errors': [], 'zone_count': 2} | duration_sec=1.53
+2026-03-14 17:50:53,332 | task.run_tasks_restock.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'items_restocked': 3, 'errors': [], 'source': 'pallet_1', 'target_count': 2} | duration_sec=2.14
+2026-03-14 17:50:56,908 | task.task_0_walk_forward.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'walk_forward', 'params': {'meters': 0.5}}
+2026-03-14 17:50:56,908 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_0_walk_forward'}
+2026-03-14 17:50:57,214 | task.task_0_walk_forward.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'meters': 0.5} | duration_sec=0.31
+2026-03-14 17:50:57,214 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_0_walk_forward'}
+2026-03-14 17:50:57,215 | task.task_1_inventory_scan.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'inventory_scan', 'params': {'zones': [{'zone_id': 'Z1', 'x': 0.5, 'y': 0}]}}
+2026-03-14 17:50:57,215 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_1_inventory_scan'}
+2026-03-14 17:50:57,981 | task.task_1_inventory_scan.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'scanned_items': [{'zone_id': 'Z1', 'success': True, 'data': None, 'scanned': 'placeholder'}], 'errors': [], 'zone_count': 1} | duration_sec=0.77
+2026-03-14 17:50:57,981 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_1_inventory_scan'}
+2026-03-17 10:17:06,974 | task.task_0_walk_forward.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'walk_forward', 'params': {'meters': 2.0}}
+2026-03-17 10:17:06,974 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_0_walk_forward'}
+2026-03-17 10:17:07,279 | task.task_0_walk_forward.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'meters': 2.0} | duration_sec=0.30
+2026-03-17 10:17:07,280 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_0_walk_forward'}
+2026-03-17 10:17:07,280 | task.task_1_turn.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'turn', 'params': {'degrees': 90}}
+2026-03-17 10:17:07,280 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_1_turn'}
+2026-03-17 10:17:07,484 | task.task_1_turn.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'degrees': 90} | duration_sec=0.20
+2026-03-17 10:17:07,485 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_1_turn'}
+2026-03-17 10:17:07,485 | task.task_2_scan_qr.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'scan_qr', 'params': {'target': 'inventory_item_placeholder'}}
+2026-03-17 10:17:07,485 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_2_scan_qr'}
+2026-03-17 10:17:07,688 | task.task_2_scan_qr.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'scanned': 'placeholder', 'data': None} | duration_sec=0.20
+2026-03-17 10:17:07,688 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_2_scan_qr'}
+2026-03-17 10:17:07,688 | task.task_3_report_dashboard.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'report_dashboard', 'params': {}}
+2026-03-17 10:17:07,688 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_3_report_dashboard'}
+2026-03-17 10:17:07,689 | task.task_3_report_dashboard.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'reported': True} | duration_sec=0.00
+2026-03-17 10:17:07,689 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_3_report_dashboard'}
+2026-03-17 10:17:55,325 | task.task_0_walk_forward.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'walk_forward', 'params': {'meters': 2.0}}
+2026-03-17 10:17:55,325 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_0_walk_forward'}
+2026-03-17 10:18:26,373 | task.task_0_walk_forward.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'meters': 2.0} | duration_sec=31.05
+2026-03-17 10:18:26,376 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_0_walk_forward'}
+2026-03-17 10:18:26,376 | task.task_1_turn.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'turn', 'params': {'degrees': 90}}
+2026-03-17 10:18:26,376 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_1_turn'}
+2026-03-17 10:18:48,414 | task.task_1_turn.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'degrees': 90} | duration_sec=22.04
+2026-03-17 10:18:48,414 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_1_turn'}
+2026-03-17 10:18:48,415 | task.task_2_scan_qr.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'scan_qr', 'params': {'target': 'inventory_item_placeholder'}}
+2026-03-17 10:18:48,415 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_2_scan_qr'}
+2026-03-17 10:18:48,620 | task.task_2_scan_qr.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'scanned': 'placeholder', 'data': None} | duration_sec=0.21
+2026-03-17 10:18:48,621 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_2_scan_qr'}
+2026-03-17 10:18:48,621 | task.task_3_report_dashboard.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'report_dashboard', 'params': {}}
+2026-03-17 10:18:48,621 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_3_report_dashboard'}
+2026-03-17 10:18:48,621 | task.task_3_report_dashboard.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'reported': True} | duration_sec=0.00
+2026-03-17 10:18:48,622 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_3_report_dashboard'}
+2026-03-18 15:06:43,558 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'robot_id': 'g1-001', 'status': 'idle', 'battery': 100, 'pose': {'x': 0, 'y': 0, 'theta': 0}, 'robot_type': 'unitree_g1', 'robot_category': 'Humanoid', 'vendor': 'unitree_sdk2'}
+2026-03-18 15:11:31,187 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'robot_id': 'g1-001', 'status': 'idle', 'battery': 100, 'pose': {'x': 0, 'y': 0, 'theta': 0}, 'robot_type': 'unitree_g1', 'robot_category': 'Humanoid', 'vendor': 'unitree_sdk2'}
+2026-03-18 15:11:31,188 | task.shadow-task-0.g1-001 | INFO | TASK_START | robot_id=g1-001 | spec={'type': 'walk_forward', 'params': {'meters': 2.0}}
+2026-03-18 15:11:31,189 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'busy', 'task_id': 'shadow-task-0'}
+2026-03-18 15:11:31,494 | task.shadow-task-0.g1-001 | INFO | TASK_END | robot_id=g1-001 | result={'success': True, 'meters': 2.0} | duration_sec=0.31
+2026-03-18 15:11:31,494 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'idle', 'last_task': 'shadow-task-0'}
+2026-03-18 15:11:31,595 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'robot_id': 'g1-001', 'status': 'idle', 'battery': 100, 'pose': {'x': 2.0, 'y': 0, 'theta': 0}, 'robot_type': 'unitree_g1', 'robot_category': 'Humanoid', 'vendor': 'unitree_sdk2'}
+2026-03-18 15:11:31,596 | task.shadow-task-1.g1-001 | INFO | TASK_START | robot_id=g1-001 | spec={'type': 'turn', 'params': {'degrees': 90}}
+2026-03-18 15:11:31,597 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'busy', 'task_id': 'shadow-task-1'}
+2026-03-18 15:11:31,798 | task.shadow-task-1.g1-001 | INFO | TASK_END | robot_id=g1-001 | result={'success': True, 'degrees': 90} | duration_sec=0.20
+2026-03-18 15:11:31,799 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'idle', 'last_task': 'shadow-task-1'}
+2026-03-18 15:11:31,905 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'robot_id': 'g1-001', 'status': 'idle', 'battery': 100, 'pose': {'x': 2.0, 'y': 0, 'theta': 90}, 'robot_type': 'unitree_g1', 'robot_category': 'Humanoid', 'vendor': 'unitree_sdk2'}
+2026-03-18 15:11:31,907 | task.shadow-task-2.g1-001 | INFO | TASK_START | robot_id=g1-001 | spec={'type': 'scan_qr', 'params': {'target': 'inventory_item_placeholder'}}
+2026-03-18 15:11:31,908 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'busy', 'task_id': 'shadow-task-2'}
+2026-03-18 15:11:32,114 | task.shadow-task-2.g1-001 | INFO | TASK_END | robot_id=g1-001 | result={'success': True, 'scanned': 'placeholder', 'data': None} | duration_sec=0.21
+2026-03-18 15:11:32,115 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'idle', 'last_task': 'shadow-task-2'}
+2026-03-18 15:20:30,404 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'robot_id': 'g1-001', 'status': 'idle', 'battery': 100, 'pose': {'x': 0, 'y': 0, 'theta': 0}, 'robot_type': 'unitree_g1', 'robot_category': 'Humanoid', 'vendor': 'unitree_sdk2'}
+2026-03-18 15:20:30,405 | task.shadow-task-0.g1-001 | INFO | TASK_START | robot_id=g1-001 | spec={'type': 'walk_forward', 'params': {'meters': 2.0}}
+2026-03-18 15:20:30,405 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'busy', 'task_id': 'shadow-task-0'}
+2026-03-18 15:20:30,706 | task.shadow-task-0.g1-001 | INFO | TASK_END | robot_id=g1-001 | result={'success': True, 'meters': 2.0} | duration_sec=0.30
+2026-03-18 15:20:30,706 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'idle', 'last_task': 'shadow-task-0'}
+2026-03-18 15:20:30,808 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'robot_id': 'g1-001', 'status': 'idle', 'battery': 100, 'pose': {'x': 2.0, 'y': 0, 'theta': 0}, 'robot_type': 'unitree_g1', 'robot_category': 'Humanoid', 'vendor': 'unitree_sdk2'}
+2026-03-18 15:20:30,809 | task.shadow-task-1.g1-001 | INFO | TASK_START | robot_id=g1-001 | spec={'type': 'turn', 'params': {'degrees': 90}}
+2026-03-18 15:20:30,809 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'busy', 'task_id': 'shadow-task-1'}
+2026-03-18 15:20:31,013 | task.shadow-task-1.g1-001 | INFO | TASK_END | robot_id=g1-001 | result={'success': True, 'degrees': 90} | duration_sec=0.20
+2026-03-18 15:20:31,015 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'idle', 'last_task': 'shadow-task-1'}
+2026-03-18 15:20:31,116 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'robot_id': 'g1-001', 'status': 'idle', 'battery': 100, 'pose': {'x': 2.0, 'y': 0, 'theta': 90}, 'robot_type': 'unitree_g1', 'robot_category': 'Humanoid', 'vendor': 'unitree_sdk2'}
+2026-03-18 15:20:31,119 | task.shadow-task-2.g1-001 | INFO | TASK_START | robot_id=g1-001 | spec={'type': 'scan_qr', 'params': {'target': 'inventory_item_placeholder'}}
+2026-03-18 15:20:31,119 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'busy', 'task_id': 'shadow-task-2'}
+2026-03-18 15:20:31,323 | task.shadow-task-2.g1-001 | INFO | TASK_END | robot_id=g1-001 | result={'success': True, 'scanned': 'placeholder', 'data': None} | duration_sec=0.20
+2026-03-18 15:20:31,325 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'idle', 'last_task': 'shadow-task-2'}
+2026-03-18 15:21:38,716 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'robot_id': 'g1-001', 'status': 'idle', 'battery': 100, 'pose': {'x': 0, 'y': 0, 'theta': 0}, 'robot_type': 'unitree_g1', 'robot_category': 'Humanoid', 'vendor': 'unitree_sdk2'}
+2026-03-18 15:21:38,717 | task.shadow-task-0.g1-001 | INFO | TASK_START | robot_id=g1-001 | spec={'type': 'walk_forward', 'params': {'meters': 2.0}}
+2026-03-18 15:21:38,717 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'busy', 'task_id': 'shadow-task-0'}
+2026-03-18 15:21:39,020 | task.shadow-task-0.g1-001 | INFO | TASK_END | robot_id=g1-001 | result={'success': True, 'meters': 2.0} | duration_sec=0.30
+2026-03-18 15:21:39,020 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'idle', 'last_task': 'shadow-task-0'}
+2026-03-18 15:22:53,676 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'robot_id': 'g1-001', 'status': 'idle', 'battery': 100, 'pose': {'x': 0, 'y': 0, 'theta': 0}, 'robot_type': 'unitree_g1', 'robot_category': 'Humanoid', 'vendor': 'unitree_sdk2'}
+2026-03-18 15:22:53,677 | task.shadow-task-0.g1-001 | INFO | TASK_START | robot_id=g1-001 | spec={'type': 'walk_forward', 'params': {'meters': 2.0}}
+2026-03-18 15:22:53,678 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'busy', 'task_id': 'shadow-task-0'}
+2026-03-18 15:22:53,979 | task.shadow-task-0.g1-001 | INFO | TASK_END | robot_id=g1-001 | result={'success': True, 'meters': 2.0} | duration_sec=0.30
+2026-03-18 15:22:53,979 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'idle', 'last_task': 'shadow-task-0'}
+2026-03-18 15:22:54,082 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'robot_id': 'g1-001', 'status': 'idle', 'battery': 100, 'pose': {'x': 2.0, 'y': 0, 'theta': 0}, 'robot_type': 'unitree_g1', 'robot_category': 'Humanoid', 'vendor': 'unitree_sdk2'}
+2026-03-18 15:22:54,083 | task.shadow-task-1.g1-001 | INFO | TASK_START | robot_id=g1-001 | spec={'type': 'turn', 'params': {'degrees': 90}}
+2026-03-18 15:22:54,083 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'busy', 'task_id': 'shadow-task-1'}
+2026-03-18 15:22:54,289 | task.shadow-task-1.g1-001 | INFO | TASK_END | robot_id=g1-001 | result={'success': True, 'degrees': 90} | duration_sec=0.21
+2026-03-18 15:22:54,289 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'idle', 'last_task': 'shadow-task-1'}
+2026-03-18 15:22:54,395 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'robot_id': 'g1-001', 'status': 'idle', 'battery': 100, 'pose': {'x': 2.0, 'y': 0, 'theta': 90}, 'robot_type': 'unitree_g1', 'robot_category': 'Humanoid', 'vendor': 'unitree_sdk2'}
+2026-03-18 15:22:54,396 | task.shadow-task-2.g1-001 | INFO | TASK_START | robot_id=g1-001 | spec={'type': 'scan_qr', 'params': {'target': 'inventory_item_placeholder'}}
+2026-03-18 15:22:54,396 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'busy', 'task_id': 'shadow-task-2'}
+2026-03-18 15:22:54,602 | task.shadow-task-2.g1-001 | INFO | TASK_END | robot_id=g1-001 | result={'success': True, 'scanned': 'placeholder', 'data': None} | duration_sec=0.21
+2026-03-18 15:22:54,604 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'idle', 'last_task': 'shadow-task-2'}
+2026-03-18 17:34:07,694 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'robot_id': 'g1-001', 'status': 'idle', 'battery': 100, 'pose': {'x': 0, 'y': 0, 'theta': 0}, 'robot_type': 'unitree_g1', 'robot_category': 'Humanoid', 'vendor': 'unitree_sdk2'}
+2026-03-18 17:34:07,695 | task.shadow-task-0.g1-001 | INFO | TASK_START | robot_id=g1-001 | spec={'type': 'walk_forward', 'params': {'meters': 2.0}}
+2026-03-18 17:34:07,695 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'busy', 'task_id': 'shadow-task-0'}
+2026-03-18 17:34:07,998 | task.shadow-task-0.g1-001 | INFO | TASK_END | robot_id=g1-001 | result={'success': True, 'meters': 2.0} | duration_sec=0.30
+2026-03-18 17:34:07,999 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'idle', 'last_task': 'shadow-task-0'}
+2026-03-18 17:34:08,103 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'robot_id': 'g1-001', 'status': 'idle', 'battery': 100, 'pose': {'x': 2.0, 'y': 0, 'theta': 0}, 'robot_type': 'unitree_g1', 'robot_category': 'Humanoid', 'vendor': 'unitree_sdk2'}
+2026-03-18 17:34:08,104 | task.shadow-task-1.g1-001 | INFO | TASK_START | robot_id=g1-001 | spec={'type': 'turn', 'params': {'degrees': 90}}
+2026-03-18 17:34:08,104 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'busy', 'task_id': 'shadow-task-1'}
+2026-03-18 17:34:08,309 | task.shadow-task-1.g1-001 | INFO | TASK_END | robot_id=g1-001 | result={'success': True, 'degrees': 90} | duration_sec=0.21
+2026-03-18 17:34:08,310 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'idle', 'last_task': 'shadow-task-1'}
+2026-03-18 17:34:08,416 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'robot_id': 'g1-001', 'status': 'idle', 'battery': 100, 'pose': {'x': 2.0, 'y': 0, 'theta': 90}, 'robot_type': 'unitree_g1', 'robot_category': 'Humanoid', 'vendor': 'unitree_sdk2'}
+2026-03-18 17:34:08,419 | task.shadow-task-2.g1-001 | INFO | TASK_START | robot_id=g1-001 | spec={'type': 'scan_qr', 'params': {'target': 'inventory_item_placeholder'}}
+2026-03-18 17:34:08,419 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'busy', 'task_id': 'shadow-task-2'}
+2026-03-18 17:34:08,621 | task.shadow-task-2.g1-001 | INFO | TASK_END | robot_id=g1-001 | result={'success': True, 'scanned': 'placeholder', 'data': None} | duration_sec=0.20
+2026-03-18 17:34:08,622 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'idle', 'last_task': 'shadow-task-2'}
+2026-03-18 17:35:32,589 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'robot_id': 'g1-001', 'status': 'idle', 'battery': 100, 'pose': {'x': 0, 'y': 0, 'theta': 0}, 'robot_type': 'unitree_g1', 'robot_category': 'Humanoid', 'vendor': 'unitree_sdk2'}
+2026-03-18 17:35:32,592 | task.shadow-task-0.g1-001 | INFO | TASK_START | robot_id=g1-001 | spec={'type': 'walk_forward', 'params': {'meters': 2.0}}
+2026-03-18 17:35:32,593 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'busy', 'task_id': 'shadow-task-0'}
+2026-03-18 17:35:32,895 | task.shadow-task-0.g1-001 | INFO | TASK_END | robot_id=g1-001 | result={'success': True, 'meters': 2.0} | duration_sec=0.30
+2026-03-18 17:35:32,895 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'idle', 'last_task': 'shadow-task-0'}
+2026-03-18 17:35:33,002 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'robot_id': 'g1-001', 'status': 'idle', 'battery': 100, 'pose': {'x': 2.0, 'y': 0, 'theta': 0}, 'robot_type': 'unitree_g1', 'robot_category': 'Humanoid', 'vendor': 'unitree_sdk2'}
+2026-03-18 17:35:33,006 | task.shadow-task-1.g1-001 | INFO | TASK_START | robot_id=g1-001 | spec={'type': 'turn', 'params': {'degrees': 90}}
+2026-03-18 17:35:33,006 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'busy', 'task_id': 'shadow-task-1'}
+2026-03-18 17:35:33,206 | task.shadow-task-1.g1-001 | INFO | TASK_END | robot_id=g1-001 | result={'success': True, 'degrees': 90} | duration_sec=0.20
+2026-03-18 17:35:33,207 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'idle', 'last_task': 'shadow-task-1'}
+2026-03-18 17:35:33,318 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'robot_id': 'g1-001', 'status': 'idle', 'battery': 100, 'pose': {'x': 2.0, 'y': 0, 'theta': 90}, 'robot_type': 'unitree_g1', 'robot_category': 'Humanoid', 'vendor': 'unitree_sdk2'}
+2026-03-18 17:35:33,328 | task.shadow-task-2.g1-001 | INFO | TASK_START | robot_id=g1-001 | spec={'type': 'scan_qr', 'params': {'target': 'inventory_item_placeholder'}}
+2026-03-18 17:35:33,329 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'busy', 'task_id': 'shadow-task-2'}
+2026-03-18 17:35:33,534 | task.shadow-task-2.g1-001 | INFO | TASK_END | robot_id=g1-001 | result={'success': True, 'scanned': 'placeholder', 'data': None} | duration_sec=0.21
+2026-03-18 17:35:33,537 | task.fleet.g1-001 | DEBUG | ROBOT_STATUS | robot_id=g1-001 | status={'status': 'idle', 'last_task': 'shadow-task-2'}
+2026-03-18 18:17:02,759 | task.task-2ca1da6a-65b8-48a8-bcb3-fc01c8028585.g1-runtime | INFO | TASK_START | robot_id=g1-runtime | spec={'type': 'walk_forward', 'params': {'meters': 1.0}}
+2026-03-18 18:17:02,759 | task.fleet.g1-runtime | DEBUG | ROBOT_STATUS | robot_id=g1-runtime | status={'status': 'busy', 'task_id': 'task-2ca1da6a-65b8-48a8-bcb3-fc01c8028585'}
+2026-03-18 18:17:03,060 | task.task-2ca1da6a-65b8-48a8-bcb3-fc01c8028585.g1-runtime | INFO | TASK_END | robot_id=g1-runtime | result={'success': True, 'meters': 1.0} | duration_sec=0.30
+2026-03-18 18:17:03,061 | task.fleet.g1-runtime | DEBUG | ROBOT_STATUS | robot_id=g1-runtime | status={'status': 'idle', 'last_task': 'task-2ca1da6a-65b8-48a8-bcb3-fc01c8028585'}
+2026-03-19 18:50:08,162 | task.task-5d6fffdf-06c8-49b0-9612-fd06709f288f.carrier-01 | INFO | TASK_START | robot_id=carrier-01 | spec={'type': 'transport', 'params': {'summary': 'Transfer groceries from dock to entry', 'source_zone': 'dock', 'destination_zone': 'entry', 'required_capabilities': ['cargo_transport', 'outdoor'], 'route': 'dock -> entry', 'task_id': 'task-5d6fffdf-06c8-49b0-9612-fd06709f288f'}}
+2026-03-19 18:50:08,162 | task.fleet.carrier-01 | DEBUG | ROBOT_STATUS | robot_id=carrier-01 | status={'status': 'busy', 'task_id': 'task-5d6fffdf-06c8-49b0-9612-fd06709f288f'}
+2026-03-19 18:50:08,978 | task.task-5d6fffdf-06c8-49b0-9612-fd06709f288f.carrier-01 | INFO | TASK_END | robot_id=carrier-01 | result={'success': True, 'source_zone': 'dock', 'destination_zone': 'entry', 'steps': [{'command': {'type': 'walk_forward', 'params': {'meters': 1.6}}, 'success': True}, {'command': {'type': 'turn', 'params': {'degrees': 35}}, 'success': True}, {'command': {'type': 'walk_forward', 'params': {'meters': 1.2}}, 'success': True}]} | duration_sec=0.82
+2026-03-19 18:50:08,979 | task.fleet.carrier-01 | DEBUG | ROBOT_STATUS | robot_id=carrier-01 | status={'status': 'idle', 'last_task': 'task-5d6fffdf-06c8-49b0-9612-fd06709f288f'}
+2026-03-20 11:01:43,131 | task.task_0_navigate_to.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'navigate_to'}
+2026-03-20 11:01:43,132 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_0_navigate_to'}
+2026-03-20 11:01:43,440 | task.task_0_navigate_to.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'meters': 1.0, 'action': 'walk_forward'} | duration_sec=0.31
+2026-03-20 11:01:43,441 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_0_navigate_to'}
+2026-03-20 11:01:57,383 | task.task_0_navigate_to.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'navigate_to'}
+2026-03-20 11:01:57,383 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_0_navigate_to'}
+2026-03-20 11:01:57,693 | task.task_0_navigate_to.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'meters': 1.0, 'action': 'walk_forward'} | duration_sec=0.31
+2026-03-20 11:01:57,694 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_0_navigate_to'}
+2026-03-20 11:06:29,412 | task.task_0_navigate_to.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'navigate_to'}
+2026-03-20 11:06:29,412 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_0_navigate_to'}
+2026-03-20 11:06:29,716 | task.task_0_navigate_to.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'meters': 1.0, 'action': 'walk_forward'} | duration_sec=0.30
+2026-03-20 11:06:29,717 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_0_navigate_to'}
+2026-03-20 11:06:34,016 | task.task_0_navigate_to.r1_1 | INFO | TASK_START | robot_id=r1_1 | spec={'type': 'navigate_to'}
+2026-03-20 11:06:34,016 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'busy', 'task_id': 'task_0_navigate_to'}
+2026-03-20 11:06:34,321 | task.task_0_navigate_to.r1_1 | INFO | TASK_END | robot_id=r1_1 | result={'success': True, 'meters': 1.0, 'action': 'walk_forward'} | duration_sec=0.30
+2026-03-20 11:06:34,322 | task.fleet.r1_1 | DEBUG | ROBOT_STATUS | robot_id=r1_1 | status={'status': 'idle', 'last_task': 'task_0_navigate_to'}

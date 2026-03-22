@@ -1,0 +1,318 @@
+/* Fleet Manager Styles */
+
+.fleet-manager {
+  padding: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.fleet-header {
+  margin-bottom: 24px;
+}
+
+.fleet-header h2 {
+  margin: 0 0 8px 0;
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+.fleet-header p {
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 0.875rem;
+}
+
+/* Fleet List */
+.fleet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.fleet-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: #252542;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.fleet-card:hover {
+  border-color: #3b82f6;
+  background: #2d2d44;
+}
+
+.fleet-card.selectable:hover {
+  border-color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.fleet-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.fleet-icon {
+  font-size: 2rem;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1a1a2e;
+  border-radius: 12px;
+}
+
+.fleet-details h4 {
+  margin: 0 0 4px 0;
+  font-size: 1.125rem;
+  color: #fff;
+}
+
+.fleet-details p {
+  margin: 0 0 8px 0;
+  color: #a1a1aa;
+  font-size: 0.875rem;
+}
+
+.fleet-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 0.75rem;
+  color: #71717a;
+}
+
+.fleet-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.fleet-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 1px solid #3f3f5f;
+  border-radius: 8px;
+  color: #a1a1aa;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-icon:hover {
+  background: #3f3f5f;
+  color: #fff;
+}
+
+.btn-icon.delete:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.select-arrow {
+  color: #71717a;
+}
+
+/* Create Fleet Button */
+.btn-create-fleet {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 16px;
+  background: transparent;
+  border: 2px dashed #3f3f5f;
+  border-radius: 12px;
+  color: #a1a1aa;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-create-fleet:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.05);
+}
+
+/* Form Overlay */
+.fleet-form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.fleet-form {
+  width: 100%;
+  max-width: 480px;
+  background: #1a1a2e;
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid #2d2d44;
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.form-header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #fff;
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  color: #71717a;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-close:hover {
+  color: #fff;
+}
+
+/* Form Fields */
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-field label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #d4d4d8;
+}
+
+.form-field input {
+  padding: 12px 16px;
+  background: #252542;
+  border: 1px solid #3f3f5f;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+}
+
+.form-field input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.form-field input::placeholder {
+  color: #6b7280;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.btn-secondary {
+  padding: 10px 20px;
+  background: transparent;
+  border: 1px solid #3f3f5f;
+  border-radius: 8px;
+  color: #a1a1aa;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #252542;
+  color: #fff;
+}
+
+.btn-primary {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Actions Footer */
+.fleet-actions-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid #2d2d44;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .fleet-manager {
+    padding: 16px;
+  }
+
+  .fleet-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .fleet-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .fleet-meta {
+    flex-wrap: wrap;
+  }
+}

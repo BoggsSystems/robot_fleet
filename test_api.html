@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Robot API Test</title>
+</head>
+<body>
+    <h1>Robot API Test</h1>
+    <button onclick="testAPI()">Test Robot API</button>
+    <div id="result"></div>
+    
+    <script>
+        async function testAPI() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Testing API...</p>';
+            
+            try {
+                console.log('🔄 Fetching from http://localhost:8002/api/robots/types');
+                const response = await fetch('http://localhost:8002/api/robots/types');
+                console.log('📡 Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const robots = await response.json();
+                console.log('🤖 Robots received:', robots);
+                
+                resultDiv.innerHTML = `
+                    <h3>✅ API Test Successful!</h3>
+                    <p>Found ${robots.length} robots:</p>
+                    <ul>
+                        ${robots.map(robot => `<li>${robot.manufacturer} ${robot.model} - ${robot.robot_type}</li>`).join('')}
+                    </ul>
+                `;
+            } catch (error) {
+                console.error('❌ API Test Failed:', error);
+                resultDiv.innerHTML = `
+                    <h3>❌ API Test Failed</h3>
+                    <p>Error: ${error.message}</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

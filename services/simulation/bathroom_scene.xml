@@ -1,0 +1,113 @@
+<mujoco model="retail_bathroom_sanitation">
+  <include file="/Users/jeffboggs/robot_fleet/SDK/unitree_mujoco/unitree_robots/g1/g1_23dof.xml"/>
+
+  <compiler meshdir="/Users/jeffboggs/robot_fleet/SDK/unitree_mujoco/unitree_robots/g1/meshes/"/>
+
+  <statistic center="3 3 0.5" extent="8.0"/>
+
+  <visual>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
+    <rgba haze="0.15 0.25 0.35 1"/>
+    <global azimuth="-130" elevation="-20"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3" markrgb="0.8 0.8 0.8" width="300" height="300"/>
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+    <material name="wall_mat" rgba="0.9 0.9 0.9 1"/>
+    <material name="stall_mat" rgba="0.7 0.7 0.8 1"/>
+    <material name="sink_mat" rgba="0.8 0.8 0.8 1"/>
+    <material name="trash_mat" rgba="0.4 0.3 0.2 1"/>
+  </asset>
+
+  <worldbody>
+    <light pos="3 3 5" dir="0 0 -1" directional="true"/>
+    <geom name="floor" size="10 10 0.05" type="plane" material="groundplane"/>
+
+    <!-- Main Bathroom Walls -->
+    <geom name="wall_north" type="box" size="3 0.05 1.5" pos="3 6 1.5" material="wall_mat"/>
+    <geom name="wall_south" type="box" size="3 0.05 1.5" pos="3 0 1.5" material="wall_mat"/>
+    <geom name="wall_east" type="box" size="0.05 3 1.5" pos="6 3 1.5" material="wall_mat"/>
+    <geom name="wall_west_bottom" type="box" size="0.05 1.5 1.5" pos="0 1.5 1.5" material="wall_mat"/> <!-- Wall south of entrance -->
+    <!-- Entrance is between Y=3 and Y=6 at X=0 -->
+
+    <!-- Hallway -->
+    <geom name="hall_north" type="box" size="2 0.05 1.5" pos="-2 6 1.5" material="wall_mat"/>
+    <geom name="hall_south" type="box" size="2 0.05 1.5" pos="-2 3 1.5" material="wall_mat"/>
+    <geom name="hall_west" type="box" size="0.05 1.5 1.5" pos="-4 4.5 1.5" material="wall_mat"/>
+
+    <!-- Stalls (3 Units) -->
+    <body name="stall_1" pos="5.5 1.0 1.0">
+        <geom type="box" size="0.4 0.02 1.0" pos="0 0 0" material="stall_mat"/> <!-- Back wall -->
+        <geom type="box" size="0.02 0.8 1.0" pos="-0.4 0.8 0" material="stall_mat"/> <!-- Side wall -->
+    </body>
+    <body name="stall_2" pos="5.5 2.8 1.0">
+        <geom type="box" size="0.4 0.02 1.0" pos="0 0 0" material="stall_mat"/>
+        <geom type="box" size="0.02 0.8 1.0" pos="-0.4 0.8 0" material="stall_mat"/>
+    </body>
+    <body name="stall_3" pos="5.5 4.6 1.0">
+        <geom type="box" size="0.4 0.02 1.0" pos="0 0 0" material="stall_mat"/>
+        <geom type="box" size="0.02 0.8 1.0" pos="-0.4 0.8 0" material="stall_mat"/>
+    </body>
+
+    <!-- Sinks & Counters -->
+    <geom name="counter" type="box" size="2.5 0.4 0.05" pos="2.5 5.5 0.9" material="sink_mat"/>
+    <geom name="sink_1" type="ellipsoid" size="0.3 0.25 0.1" pos="1.0 5.5 0.85" rgba="0.9 0.9 1 1"/>
+    <geom name="sink_2" type="ellipsoid" size="0.3 0.25 0.1" pos="2.5 5.5 0.85" rgba="0.9 0.9 1 1"/>
+    <geom name="sink_3" type="ellipsoid" size="0.3 0.25 0.1" pos="4.0 5.5 0.85" rgba="0.9 0.9 1 1"/>
+
+    <!-- Trash Bins -->
+    <body name="main_bin" pos="0.5 0.5 0.4">
+        <geom type="cylinder" size="0.25 0.4" material="wall_mat"/>
+        <site name="bin_target" pos="0 0 0.4" size="0.05"/>
+    </body>
+
+    
+    <body name="trash_0" pos="4.81 4.77 0.10">
+        <freejoint/>
+        <geom name="trash_geom_0" type="box" size="0.05 0.05 0.02" material="trash_mat" mass="0.1" friction="0.8 0.005 0.0001"/>
+        <inertial pos="0 0 0" mass="0.1" diaginertia="0.001 0.001 0.001"/>
+    </body>
+    <body name="trash_1" pos="2.39 4.03 0.10">
+        <freejoint/>
+        <geom name="trash_geom_1" type="box" size="0.05 0.05 0.02" material="trash_mat" mass="0.1" friction="0.8 0.005 0.0001"/>
+        <inertial pos="0 0 0" mass="0.1" diaginertia="0.001 0.001 0.001"/>
+    </body>
+    <body name="trash_2" pos="1.93 1.48 0.10">
+        <freejoint/>
+        <geom name="trash_geom_2" type="box" size="0.05 0.05 0.02" material="trash_mat" mass="0.1" friction="0.8 0.005 0.0001"/>
+        <inertial pos="0 0 0" mass="0.1" diaginertia="0.001 0.001 0.001"/>
+    </body>
+    <body name="trash_3" pos="4.33 3.43 0.10">
+        <freejoint/>
+        <geom name="trash_geom_3" type="box" size="0.05 0.05 0.02" material="trash_mat" mass="0.1" friction="0.8 0.005 0.0001"/>
+        <inertial pos="0 0 0" mass="0.1" diaginertia="0.001 0.001 0.001"/>
+    </body>
+    <body name="trash_4" pos="2.59 1.54 0.10">
+        <freejoint/>
+        <geom name="trash_geom_4" type="box" size="0.05 0.05 0.02" material="trash_mat" mass="0.1" friction="0.8 0.005 0.0001"/>
+        <inertial pos="0 0 0" mass="0.1" diaginertia="0.001 0.001 0.001"/>
+    </body>
+    <body name="trash_5" pos="4.36 4.18 0.10">
+        <freejoint/>
+        <geom name="trash_geom_5" type="box" size="0.05 0.05 0.02" material="trash_mat" mass="0.1" friction="0.8 0.005 0.0001"/>
+        <inertial pos="0 0 0" mass="0.1" diaginertia="0.001 0.001 0.001"/>
+    </body>
+    <body name="trash_6" pos="1.44 4.23 0.10">
+        <freejoint/>
+        <geom name="trash_geom_6" type="box" size="0.05 0.05 0.02" material="trash_mat" mass="0.1" friction="0.8 0.005 0.0001"/>
+        <inertial pos="0 0 0" mass="0.1" diaginertia="0.001 0.001 0.001"/>
+    </body>
+    <body name="trash_7" pos="2.37 4.49 0.10">
+        <freejoint/>
+        <geom name="trash_geom_7" type="box" size="0.05 0.05 0.02" material="trash_mat" mass="0.1" friction="0.8 0.005 0.0001"/>
+        <inertial pos="0 0 0" mass="0.1" diaginertia="0.001 0.001 0.001"/>
+    </body>
+    
+  </worldbody>
+  <keyframe>
+      <!-- Spawn robot inside bathroom at trash location -->
+      <key name="starting_pos" qpos="1.93 1.48 0.8 1 0 0 0"/>
+  </keyframe>
+</mujoco>

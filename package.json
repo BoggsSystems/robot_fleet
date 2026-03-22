@@ -1,0 +1,43 @@
+{
+  "name": "robot-fleet",
+  "version": "1.0.0",
+  "description": "Robot Fleet Management System - Monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "services/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:apps\" \"npm run dev:services\"",
+    "dev:apps": "concurrently \"npm run dev:cottage\" \"npm run dev:fleet\"",
+    "dev:cottage": "npm run dev --workspace=@robot-fleet/cottage-client",
+    "dev:fleet": "npm run dev --workspace=@robot-fleet/fleet-admin",
+    "dev:services": "concurrently \"npm run dev:fleet-control\" \"npm run dev:robot-api\"",
+    "dev:fleet-control": "npm run dev --workspace=@robot-fleet/fleet-control",
+    "dev:robot-api": "npm run dev --workspace=@robot-fleet/robot-api",
+    "build": "npm run build --workspaces",
+    "build:apps": "npm run build --workspace=@robot-fleet/cottage-client --workspace=@robot-fleet/fleet-admin",
+    "build:packages": "npm run build --workspaces --if-present",
+    "build:services": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces",
+    "type-check": "npm run type-check --workspaces",
+    "clean": "npm run clean --workspaces && rm -rf node_modules",
+    "install:all": "npm install && npm install --workspaces",
+    "install:apps": "npm install --workspace=@robot-fleet/cottage-client --workspace=@robot-fleet/fleet-admin",
+    "install:packages": "npm install --workspaces",
+    "start": "npm run start --workspaces",
+    "docker:build": "docker-compose -f infrastructure/docker-compose.yml build",
+    "docker:up": "docker-compose -f infrastructure/docker-compose.yml up",
+    "docker:down": "docker-compose -f infrastructure/docker-compose.yml down"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}

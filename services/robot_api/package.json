@@ -1,0 +1,25 @@
+{
+  "name": "@robot-fleet/robot-api",
+  "version": "1.0.0",
+  "description": "Robot Data API - Shared Robot Information Service",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "python simple_robot_api.py",
+    "start": "python simple_robot_api.py",
+    "test": "python -m pytest",
+    "lint": "python -m flake8",
+    "type-check": "python -m mypy"
+  },
+  "dependencies": {
+    "fastapi": "^0.104.0",
+    "uvicorn": "^0.24.0",
+    "pydantic": "^2.5.0",
+    "sqlalchemy": "^2.0.0"
+  },
+  "devDependencies": {
+    "pytest": "^7.4.0",
+    "flake8": "^6.0.0",
+    "mypy": "^1.5.0"
+  }
+}

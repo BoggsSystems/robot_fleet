@@ -1,0 +1,42 @@
+<mujoco model="simple_robot_test">
+  <!-- Include G1 robot -->
+  <include file="/Users/jeffboggs/robot_fleet/SDK/unitree_mujoco/unitree_robots/g1/g1_23dof.xml"/>
+
+  <compiler meshdir="/Users/jeffboggs/robot_fleet/SDK/unitree_mujoco/unitree_robots/g1/meshes/"/>
+
+  <statistic center="2.5 1.5 0.5" extent="5.0"/>
+
+  <visual>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
+    <rgba haze="0.15 0.25 0.35 1"/>
+    <global azimuth="-130" elevation="-20"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3" markrgb="0.8 0.8 0.8" width="300" height="300"/>
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+    <material name="trash_mat" rgba="0.4 0.3 0.2 1"/>
+  </asset>
+
+  <worldbody>
+    <light pos="2.5 1.5 5" dir="0 0 -1" directional="true"/>
+    <geom name="floor" size="10 10 0.05" type="plane" material="groundplane"/>
+
+    <!-- Single piece of trash positioned 1 meter in front of robot -->
+    <body name="target_trash" pos="2.93 1.48 0.10">
+        <freejoint/>
+        <geom name="target_trash_geom" type="box" size="0.05 0.05 0.02" material="trash_mat" mass="0.1" friction="0.8 0.005 0.0001"/>
+        <inertial pos="0 0 0" mass="0.1" diaginertia="0.001 0.001 0.001"/>
+        <!-- Visual marker to make it more visible -->
+        <site name="trash_site" pos="0 0 0.05" size="0.1" rgba="1.0 0.0 0.0 0.8"/>
+    </body>
+
+  </worldbody>
+  
+  <!-- Set robot starting position -->
+  <keyframe>
+      <!-- Robot starts at [1.93, 1.48, 0.8] facing east -->
+      <key name="robot_start" qpos="1.93 1.48 0.8 1 0 0 0"/>
+  </keyframe>
+</mujoco>

@@ -1,0 +1,36 @@
+# Docker ignore patterns
+.git
+.gitignore
+.gitmodules
+.venv
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+data/logs/*
+simulation/output/*
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Exclude large model files
+*.pt
+*.pth
+*.onnx
+*.h5
+
+# Exclude temporary files
+MUJOCO_LOG.TXT
+*.tmp
+*.temp

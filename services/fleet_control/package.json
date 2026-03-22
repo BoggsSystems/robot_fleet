@@ -1,0 +1,26 @@
+{
+  "name": "@robot-fleet/fleet-control",
+  "version": "1.0.0",
+  "description": "Core Fleet Control Service - Robot Orchestration",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "python -m fleet_control.pilot_module --sim",
+    "start": "python -m fleet_control.pilot_module",
+    "test": "python -m pytest",
+    "lint": "python -m flake8",
+    "type-check": "python -m mypy"
+  },
+  "dependencies": {
+    "fastapi": "^0.104.0",
+    "uvicorn": "^0.24.0",
+    "pydantic": "^2.5.0",
+    "sqlalchemy": "^2.0.0",
+    "python-multipart": "^0.0.6"
+  },
+  "devDependencies": {
+    "pytest": "^7.4.0",
+    "flake8": "^6.0.0",
+    "mypy": "^1.5.0"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "@robot-fleet/shared-api",
+  "version": "1.0.0",
+  "description": "Shared API clients for Robot Fleet System",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@robot-fleet/shared-types": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
