@@ -1,0 +1,36 @@
+{
+  "name": "robot-simulator",
+  "version": "1.0.0",
+  "description": "Multi-robot fleet simulator for Azure IoT Hub integration",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest",
+    "lint": "eslint src/",
+    "docker:build": "docker build -t robot-simulator .",
+    "docker:run": "docker run -p 3000:3000 robot-simulator"
+  },
+  "dependencies": {
+    "azure-iot-device": "^1.17.4",
+    "azure-iot-device-mqtt": "^1.16.4",
+    "dotenv": "^16.3.1",
+    "winston": "^3.11.0",
+    "uuid": "^9.0.1",
+    "mathjs": "^12.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "jest": "^29.7.0",
+    "eslint": "^8.56.0"
+  },
+  "keywords": [
+    "robot",
+    "simulator",
+    "azure",
+    "iot-hub",
+    "telemetry"
+  ],
+  "author": "Robot Fleet Team",
+  "license": "MIT"
+}

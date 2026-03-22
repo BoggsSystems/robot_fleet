@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  robot-simulator:
+    build:
+      context: ./services/robot_simulator
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - LOG_LEVEL=info
+      - TELEMETRY_INTERVAL_MS=3000
+      - ROBOT_COUNT=5
+    volumes:
+      - ./services/robot_simulator/logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - robot-fleet-network
+
+  # Add other services as we create them
+  # event-processor:
+  #   build: ./services/event_processor
+  #   depends_on:
+  #     - robot-simulator
+  #   networks:
+  #     - robot-fleet-network
+
+networks:
+  robot-fleet-network:
+    driver: bridge
+
+volumes:
+  robot-logs:
+    driver: local
