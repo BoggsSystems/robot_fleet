@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered DTDL Model Creator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+        .conversation-panel {
+            border-right: 1px solid #eee;
+        }
+        .model-preview {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+        select, input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background: #5a6fd8;
+        }
+        .btn-secondary {
+            background: #6c757d;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        .conversation-history {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .user-message {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+        }
+        .ai-message {
+            background: #f3e5f5;
+            border-left: 4px solid #9c27b0;
+        }
+        .dtdl-output {
+            background: #263238;
+            color: #aed581;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .validation-status {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .validation-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .validation-error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .suggestions {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .suggestions h4 {
+            margin-top: 0;
+            color: #856404;
+        }
+        .suggestions ul {
+            margin-bottom: 0;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        .tab.active {
+            border-bottom-color: #667eea;
+            color: #667eea;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .entity-list {
+            list-style: none;
+            padding: 0;
+        }
+        .entity-item {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .entity-type {
+            font-weight: bold;
+            color: #667eea;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI-Powered DTDL Model Creator</h1>
+            <p>Conversationally build Digital Twin Definition Language models with AI assistance</p>
+        </div>
+
+        <div class="main-content">
+            <div class="conversation-panel">
+                <h2>💬 Conversation Builder</h2>
+                
+                <div class="form-group">
+                    <label for="modelType">Model Type:</label>
+                    <select id="modelType">
+                        <option value="warehouse">🏭 Warehouse</option>
+                        <option value="zone">📍 Zone</option>
+                        <option value="robot">🤖 Robot</option>
+                        <option value="sensor">📡 Sensor</option>
+                        <option value="custom">🔧 Custom</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="userInput">Describe your model:</label>
+                    <textarea id="userInput" placeholder="e.g., 'I want a warehouse model with name, total area, and temperature. It should contain zones and track occupancy.'"></textarea>
+                </div>
+
+                <button class="btn" onclick="sendToAI()">🚀 Generate DTDL</button>
+                <button class="btn btn-secondary" onclick="clearConversation()">🔄 Clear</button>
+
+                <div class="conversation-history" id="conversationHistory">
+                    <div class="ai-message">
+                        <strong>AI Assistant:</strong> Hello! I'll help you create DTDL models through conversation. Start by describing what kind of model you want to create.
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Quick Templates:</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <button class="btn btn-secondary" onclick="useTemplate('warehouse')">🏭 Warehouse</button>
+                        <button class="btn btn-secondary" onclick="useTemplate('zone')">📍 Zone</button>
+                        <button class="btn btn-secondary" onclick="useTemplate('robot')">🤖 Robot</button>
+                        <button class="btn btn-secondary" onclick="useTemplate('sensor')">📡 Sensor</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="model-preview">
+                <h2>📋 Model Preview</h2>
+                
+                <div class="tabs">
+                    <div class="tab active" onclick="switchTab('dtdl')">DTDL Output</div>
+                    <div class="tab" onclick="switchTab('entities')">Extracted Entities</div>
+                    <div class="tab" onclick="switchTab('validation')">Validation</div>
+                </div>
+
+                <div id="dtdl-tab" class="tab-content active">
+                    <div class="dtdl-output" id="dtdlOutput">
+                        Your generated DTDL model will appear here...
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <button class="btn" onclick="copyDTDL()">📋 Copy DTDL</button>
+                        <button class="btn btn-secondary" onclick="downloadDTDL()">💾 Download</button>
+                        <button class="btn btn-secondary" onclick="registerModel()">🔗 Register in Azure</button>
+                    </div>
+                </div>
+
+                <div id="entities-tab" class="tab-content">
+                    <div id="extractedEntities">
+                        <p>Extracted entities will appear here...</p>
+                    </div>
+                </div>
+
+                <div id="validation-tab" class="tab-content">
+                    <div id="validationResults">
+                        <p>Validation results will appear here...</p>
+                    </div>
+                    <div id="suggestions" style="display: none;">
+                        <div class="suggestions">
+                            <h4>💡 Suggestions for Improvement:</h4>
+                            <ul id="suggestionsList"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let conversationId = null;
+        const AI_ENGINE_URL = 'https://warehouse-ai-engine.kindmoss-6eac8399.eastus.azurecontainerapps.io';
+
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function addMessage(type, content) {
+            const history = document.getElementById('conversationHistory');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+            messageDiv.innerHTML = `<strong>${type === 'user' ? 'You' : 'AI Assistant'}:</strong> ${content}`;
+            history.appendChild(messageDiv);
+            history.scrollTop = history.scrollHeight;
+        }
+
+        async function sendToAI() {
+            const userInput = document.getElementById('userInput').value;
+            const modelType = document.getElementById('modelType').value;
+
+            if (!userInput.trim()) {
+                alert('Please describe your model first!');
+                return;
+            }
+
+            addMessage('user', userInput);
+
+            try {
+                const response = await fetch(`${AI_ENGINE_URL}/api/dtdl/conversation`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        conversation_id: conversationId,
+                        user_input: userInput,
+                        model_type: modelType
+                    })
+                });
+
+                const result = await response.json();
+                conversationId = result.conversation_id;
+
+                // Display AI response
+                addMessage('ai', `I've generated a ${result.model_type} model based on your description. Here's what I extracted:`);
+
+                // Update DTDL output
+                document.getElementById('dtdlOutput').textContent = JSON.stringify(result.generated_dtdl, null, 2);
+
+                // Update extracted entities
+                displayEntities(result.extracted_entities);
+
+                // Update validation
+                displayValidation(result.validation, result.suggestions);
+
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('ai', `Sorry, I encountered an error: ${error.message}`);
+            }
+        }
+
+        function displayEntities(entities) {
+            const container = document.getElementById('extractedEntities');
+            let html = '';
+
+            if (entities.properties.length > 0) {
+                html += '<h4>🏷️ Properties:</h4><ul class="entity-list">';
+                entities.properties.forEach(prop => {
+                    html += `<li class="entity-item">
+                        <div class="entity-type">Property</div>
+                        <strong>${prop.name}</strong> (${prop.type})
+                        <br><small>${prop.description}</small>
+                    </li>`;
+                });
+                html += '</ul>';
+            }
+
+            if (entities.relationships.length > 0) {
+                html += '<h4>🔗 Relationships:</h4><ul class="entity-list">';
+                entities.relationships.forEach(rel => {
+                    html += `<li class="entity-item">
+                        <div class="entity-type">Relationship</div>
+                        <strong>${rel.name}</strong> → ${rel.target_model}
+                        <br><small>${rel.description}</small>
+                    </li>`;
+                });
+                html += '</ul>';
+            }
+
+            if (entities.telemetry.length > 0) {
+                html += '<h4>📊 Telemetry:</h4><ul class="entity-list">';
+                entities.telemetry.forEach(tel => {
+                    html += `<li class="entity-item">
+                        <div class="entity-type">Telemetry</div>
+                        <strong>${tel.name}</strong> (${tel.type})
+                        <br><small>${tel.description}</small>
+                    </li>`;
+                });
+                html += '</ul>';
+            }
+
+            container.innerHTML = html || '<p>No entities extracted yet.</p>';
+        }
+
+        function displayValidation(validation, suggestions) {
+            const container = document.getElementById('validationResults');
+            const suggestionsDiv = document.getElementById('suggestions');
+            const suggestionsList = document.getElementById('suggestionsList');
+
+            // Validation status
+            const statusClass = validation.valid ? 'validation-success' : 'validation-error';
+            const statusIcon = validation.valid ? '✅' : '❌';
+            container.innerHTML = `
+                <div class="validation-status ${statusClass}">
+                    <strong>${statusIcon} Validation Status:</strong> ${validation.valid ? 'Valid' : 'Invalid'}
+                </div>
+            `;
+
+            if (!validation.valid && validation.errors.length > 0) {
+                container.innerHTML += '<h4>❌ Errors:</h4><ul>';
+                validation.errors.forEach(error => {
+                    container.innerHTML += `<li>${error}</li>`;
+                });
+                container.innerHTML += '</ul>';
+            }
+
+            if (validation.warnings.length > 0) {
+                container.innerHTML += '<h4>⚠️ Warnings:</h4><ul>';
+                validation.warnings.forEach(warning => {
+                    container.innerHTML += `<li>${warning}</li>`;
+                });
+                container.innerHTML += '</ul>';
+            }
+
+            // Suggestions
+            if (suggestions && suggestions.length > 0) {
+                suggestionsList.innerHTML = '';
+                suggestions.forEach(suggestion => {
+                    suggestionsList.innerHTML += `<li>${suggestion}</li>`;
+                });
+                suggestionsDiv.style.display = 'block';
+            } else {
+                suggestionsDiv.style.display = 'none';
+            }
+        }
+
+        function useTemplate(templateType) {
+            const templates = {
+                warehouse: "I want a warehouse model with name, total area, and status. It should contain zones and track temperature and humidity.",
+                zone: "I need a zone model with name, zone type, capacity, and current load. It should contain robots and monitor activity level.",
+                robot: "I want a robot model with name, type, battery level, and status. It should send position, speed, and load weight telemetry.",
+                sensor: "I need a sensor model with sensor type, location, and readings. It should monitor temperature, humidity, and air quality."
+            };
+
+            document.getElementById('userInput').value = templates[templateType];
+            document.getElementById('modelType').value = templateType;
+        }
+
+        function clearConversation() {
+            document.getElementById('conversationHistory').innerHTML = `
+                <div class="ai-message">
+                    <strong>AI Assistant:</strong> Conversation cleared. Let's start fresh! What kind of model would you like to create?
+                </div>
+            `;
+            document.getElementById('userInput').value = '';
+            document.getElementById('dtdlOutput').textContent = 'Your generated DTDL model will appear here...';
+            document.getElementById('extractedEntities').innerHTML = '<p>Extracted entities will appear here...</p>';
+            document.getElementById('validationResults').innerHTML = '<p>Validation results will appear here...</p>';
+            conversationId = null;
+        }
+
+        function copyDTDL() {
+            const dtdlText = document.getElementById('dtdlOutput').textContent;
+            navigator.clipboard.writeText(dtdlText).then(() => {
+                alert('DTDL model copied to clipboard!');
+            });
+        }
+
+        function downloadDTDL() {
+            const dtdlText = document.getElementById('dtdlOutput').textContent;
+            const blob = new Blob([dtdlText], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'digital-twin-model.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function registerModel() {
+            alert('Model registration feature coming soon! This will integrate with Azure Digital Twins.');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add enter key support for textarea
+            document.getElementById('userInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && e.ctrlKey) {
+                    sendToAI();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

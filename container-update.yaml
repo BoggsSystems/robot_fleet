@@ -1,0 +1,31 @@
+properties:
+  configuration:
+    runtime:
+      name: node
+      version: "18"
+  template:
+    containers:
+      - name: robot-fleet-api
+        image: node:18-alpine
+        command: ["sh", "-c"]
+        args: ["npm install -g express cors helmet jsonwebtoken bcryptjs && node -e \"const express=require('express'); const cors=require('cors'); const helmet=require('helmet'); const jwt=require('jsonwebtoken'); const bcrypt=require('bcryptjs'); const app=express(); const PORT=process.env.PORT||3001; const JWT_SECRET=process.env.JWT_SECRET||'robot-fleet-jwt-secret-2024'; app.use(helmet()); app.use(cors()); app.use(express.json()); const users=[{id:1,username:'admin',password:'$2b$10$N9qo8cLOtixxTyFHoCpQa6V.E8dKvHwQmKlYqJ8K5YQ6C8',role:'admin'}]; const generateToken=user=>jwt.sign({id:user.id,username:user.username,role:user.role},JWT_SECRET,{expiresIn:'1h'}); app.get('/health',(req,res)=>res.json({status:'healthy',timestamp:new Date().toISOString(),service:'robot-fleet-api',version:'1.0.0'})); app.post('/api/auth/login',async(req,res)=>{try{const{username,password}=req.body;const user=users.find(u=>u.username===username);if(!user)return res.status(401).json({error:'Invalid credentials'});const isValidPassword=await bcrypt.compare(password,user.password);if(!isValidPassword)return res.status(401).json({error:'Invalid credentials'});const accessToken=generateToken(user);const refreshToken=jwt.sign({type:'refresh'},JWT_SECRET,{expiresIn:'7d'});res.json({success:true,user:{id:user.id,username:user.username,role:user.role},tokens:{accessToken,refreshToken}});}catch(error){res.status(500).json({error:'Internal server error'});}}); app.post('/api/auth/logout',(req,res)=>res.json({success:true})); app.get('/api/auth/me',(req,res)=>res.json({success:true,user:{id:1,username:'admin',role:'admin'}})); app.listen(PORT,()=>console.log('🚀 Robot Fleet API running on port '+PORT));\""]
+        env:
+          - name: NODE_ENV
+            value: "production"
+          - name: PORT
+            value: "3001"
+          - name: JWT_SECRET
+            value: "robot-fleet-jwt-secret-2024"
+          - name: IOT_HUB_CONNECTION_STRING
+            value: "HostName=robot-fleet-hub.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=B16xWehoM1PG9y5cq1+a5FYdQusJScCJdAIoTJZUPww="
+          - name: STORAGE_CONNECTION_STRING
+            value: "DefaultEndpointsProtocol=https;EndpointSuffix=core.windows.net;AccountName=robotfleetstorage2024;AccountKey=6HVAj6fe/9g+A6lkarTcS5lv/XrkJcEN+Xy/6JhvHoQlizw9dQICanZWtLF5C5W3d7k2Ai5gv8zi+AStFe38Vg=="
+          - name: COSMOS_DB_ENDPOINT
+            value: "https://robot-fleet-cosmos.documents.azure.com:443/"
+          - name: COSMOS_DB_KEY
+            value: "TIzreRbB8MkTguGtX8r0ZFhMfOc33QpiUT1aWaZA5bTwMgtjGgyZYwdFef8VOCvNGdpT1LKtVzb5ACDbuivWMw=="
+          - name: DIGITAL_TWINS_ENDPOINT
+            value: "https://robot-fleet-digital-twins.api.eus.digitaltwins.azure.net"
+        resources:
+          cpu: 0.5
+          memory: 1Gi

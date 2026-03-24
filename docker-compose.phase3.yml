@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  robot-simulator:
+    build:
+      context: ./services/robot_simulator
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - LOG_LEVEL=info
+      - TELEMETRY_INTERVAL_MS=3000
+      - ROBOT_COUNT=5
+    volumes:
+      - ./services/robot_simulator/logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - robot-fleet-network
+    depends_on:
+      - event-processor
+
+  event-processor:
+    build:
+      context: ./services/event_processor
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - LOG_LEVEL=info
+      - PORT=3001
+      - TELEMETRY_BATCH_SIZE=10
+      - TELEMETRY_BATCH_TIMEOUT_MS=5000
+      - BATTERY_LOW_THRESHOLD=20
+      - TEMPERATURE_HIGH_THRESHOLD=80
+      - CONNECTION_TIMEOUT_SECONDS=30
+      - ERROR_RATE_THRESHOLD=0.1
+      # Azure connections
+      - IOT_HUB_CONNECTION_STRING=${IOT_HUB_CONNECTION_STRING}
+      - IOT_HUB_EVENT_HUB_NAME=robot-fleet-hub
+      - COSMOS_DB_ENDPOINT=${COSMOS_DB_ENDPOINT}
+      - COSMOS_DB_KEY=${COSMOS_DB_KEY}
+      - COSMOS_DB_DATABASE=robot-fleet-db
+      - COSMOS_DB_CONTAINER=telemetry
+      - DIGITAL_TWINS_ENDPOINT=${DIGITAL_TWINS_ENDPOINT}
+      # JWT secrets
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+    volumes:
+      - ./services/event_processor/logs:/app/logs
+    ports:
+      - "3001:3001"
+    restart: unless-stopped
+    networks:
+      - robot-fleet-network
+
+  fleet-dashboard:
+    build:
+      context: ./apps/fleet_dashboard
+      dockerfile: Dockerfile
+    environment:
+      - REACT_APP_API_URL=http://localhost:3001
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    networks:
+      - robot-fleet-network
+    depends_on:
+      - event-processor
+
+  # Add intent-bridge service when ready
+  # intent-bridge:
+  #   build: ./services/intent_bridge
+  #   depends_on:
+  #     - event-processor
+  #   networks:
+  #     - robot-fleet-network
+
+networks:
+  robot-fleet-network:
+    driver: bridge
+
+volumes:
+  robot-simulator-logs:
+    driver: local
+  event-processor-logs:
+    driver: local

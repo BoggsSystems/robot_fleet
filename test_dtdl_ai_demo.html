@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 AI-Powered DTDL Generator - Live Demo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 3em;
+            font-weight: 700;
+        }
+        .header p {
+            margin: 15px 0 0 0;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .ai-status {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: inline-block;
+        }
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 40px;
+        }
+        .input-panel {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 30px;
+        }
+        .output-panel {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid #e9ecef;
+        }
+        .form-group {
+            margin-bottom: 25px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+        select, input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        textarea {
+            height: 120px;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+        }
+        .result-section {
+            margin-top: 30px;
+        }
+        .dtdl-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 25px;
+            border-radius: 10px;
+            font-family: 'Cascadia Code', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #333;
+        }
+        .status-indicator {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .entities-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .entity-card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .entity-card h4 {
+            margin: 0 0 10px 0;
+            color: #667eea;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+        .entity-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .entity-item {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+        .entity-name {
+            font-weight: 600;
+            color: #333;
+        }
+        .entity-type {
+            color: #666;
+            font-size: 11px;
+        }
+        .suggestions-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .suggestions-box h4 {
+            margin: 0 0 15px 0;
+            color: #856404;
+        }
+        .suggestions-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .suggestions-box li {
+            margin-bottom: 8px;
+            color: #856404;
+        }
+        .examples-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .example-btn {
+            background: white;
+            border: 1px solid #667eea;
+            color: #667eea;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        .example-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+        }
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI-Powered DTDL Generator</h1>
+            <p>Conversational Digital Twin Definition Language creation with Azure OpenAI</p>
+            <div class="ai-status">
+                <strong>🔗 Azure Integration:</strong> Connected to Azure OpenAI Service
+                <br><strong>🚀 Status:</strong> <span id="aiServiceStatus">Checking...</span>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="input-panel">
+                <h2>💬 Describe Your Model</h2>
+                
+                <div class="form-group">
+                    <label for="modelType">Model Type:</label>
+                    <select id="modelType">
+                        <option value="warehouse">🏭 Warehouse</option>
+                        <option value="zone">📍 Zone</option>
+                        <option value="robot">🤖 Robot</option>
+                        <option value="sensor">📡 Sensor</option>
+                        <option value="custom">🔧 Custom</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="userInput">Natural Language Description:</label>
+                    <textarea id="userInput" placeholder="Example: 'I want a warehouse model with name, total area, and temperature monitoring. It should contain zones and track occupancy.'"></textarea>
+                </div>
+
+                <div>
+                    <button class="btn" onclick="generateDTDL()">🚀 Generate DTDL</button>
+                    <button class="btn btn-secondary" onclick="clearResults()">🔄 Clear</button>
+                    <button class="btn btn-success" onclick="copyDTDL()">📋 Copy</button>
+                    <button class="btn btn-warning" onclick="downloadDTDL()">💾 Download</button>
+                </div>
+
+                <div class="examples-section">
+                    <h4>🎯 Quick Examples:</h4>
+                    <button class="example-btn" onclick="loadExample('warehouse')">Warehouse with sensors</button>
+                    <button class="example-btn" onclick="loadExample('robot')">Robot with telemetry</button>
+                    <button class="example-btn" onclick="loadExample('zone')">Zone management</button>
+                    <button class="example-btn" onclick="loadExample('complex')">Complex warehouse</button>
+                </div>
+
+                <div id="resultInfo" style="margin-top: 20px; display: none;">
+                    <div id="statusIndicator" class="status-indicator"></div>
+                    <div id="methodInfo"></div>
+                </div>
+            </div>
+
+            <div class="output-panel">
+                <h2>📋 Generated DTDL Model</h2>
+                
+                <div id="loadingIndicator" class="loading" style="display: none;">
+                    Generating DTDL with AI...
+                </div>
+
+                <div id="resultsSection" class="result-section" style="display: none;">
+                    <!-- DTDL Output -->
+                    <div class="dtdl-output" id="dtdlOutput">
+                        Your DTDL model will appear here...
+                    </div>
+
+                    <!-- Extracted Entities -->
+                    <div class="entities-grid" id="entitiesGrid" style="display: none;">
+                        <div class="entity-card">
+                            <h4>🏷️ Properties</h4>
+                            <ul class="entity-list" id="propertiesList"></ul>
+                        </div>
+                        <div class="entity-card">
+                            <h4>🔗 Relationships</h4>
+                            <ul class="entity-list" id="relationshipsList"></ul>
+                        </div>
+                        <div class="entity-card">
+                            <h4>📊 Telemetry</h4>
+                            <ul class="entity-list" id="telemetryList"></ul>
+                        </div>
+                    </div>
+
+                    <!-- Suggestions -->
+                    <div class="suggestions-box" id="suggestionsBox" style="display: none;">
+                        <h4>💡 AI Suggestions:</h4>
+                        <ul id="suggestionsList"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const AI_ENGINE_URL = 'https://warehouse-ai-engine.kindmoss-6eac8399.eastus.azurecontainerapps.io';
+        
+        const examples = {
+            warehouse: "I want a warehouse model with name, total area, and temperature. It should contain zones and track occupancy.",
+            robot: "Create a robot model with name, type, battery level, and position. It should send speed and load weight telemetry.",
+            zone: "I need a zone model with name, zone type, capacity, and current load. It should monitor temperature and activity level.",
+            complex: "Design a sophisticated warehouse digital twin that tracks inventory levels, monitors environmental conditions, manages robot fleet operations with predictive maintenance capabilities, and provides real-time analytics for operational efficiency."
+        };
+
+        function loadExample(type) {
+            document.getElementById('userInput').value = examples[type];
+            document.getElementById('modelType').value = type === 'complex' ? 'warehouse' : type;
+        }
+
+        function showLoading(show) {
+            document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
+            document.getElementById('resultsSection').style.display = show ? 'none' : 'block';
+        }
+
+        function updateStatus(status, message, method = null) {
+            const indicator = document.getElementById('statusIndicator');
+            const methodInfo = document.getElementById('methodInfo');
+            const resultInfo = document.getElementById('resultInfo');
+            
+            indicator.className = `status-indicator status-${status}`;
+            indicator.textContent = message;
+            
+            if (method) {
+                methodInfo.innerHTML = `<strong>Method:</strong> ${method}`;
+            }
+            
+            resultInfo.style.display = 'block';
+        }
+
+        async function generateDTDL() {
+            const userInput = document.getElementById('userInput').value;
+            const modelType = document.getElementById('modelType').value;
+
+            if (!userInput.trim()) {
+                alert('Please describe your model first!');
+                return;
+            }
+
+            showLoading(true);
+
+            try {
+                const response = await fetch(`${AI_ENGINE_URL}/api/dtdl/conversation`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_input: userInput,
+                        model_type: modelType
+                    })
+                });
+
+                const result = await response.json();
+
+                // Display results
+                displayResults(result);
+
+                // Update status
+                const aiStatus = result.ai_status || {};
+                const method = result.ai_method || 'unknown';
+                
+                if (aiStatus.azure_openai_available) {
+                    updateStatus('success', '✅ AI-Powered Generation Complete', `Azure OpenAI (${method})`);
+                } else {
+                    updateStatus('warning', '⚠️ Pattern-Based Generation', `Fallback Mode (${method})`);
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                updateStatus('error', '❌ Generation Failed', error.message);
+                showLoading(false);
+            }
+        }
+
+        function displayResults(result) {
+            showLoading(false);
+
+            // Display DTDL
+            const dtdlOutput = document.getElementById('dtdlOutput');
+            dtdlOutput.textContent = JSON.stringify(result.generated_dtdl, null, 2);
+
+            // Display entities
+            displayEntities(result.extracted_entities);
+
+            // Display suggestions
+            displaySuggestions(result.suggestions);
+
+            // Show results section
+            document.getElementById('resultsSection').style.display = 'block';
+        }
+
+        function displayEntities(entities) {
+            const entitiesGrid = document.getElementById('entitiesGrid');
+            const propertiesList = document.getElementById('propertiesList');
+            const relationshipsList = document.getElementById('relationshipsList');
+            const telemetryList = document.getElementById('telemetryList');
+
+            // Clear existing
+            propertiesList.innerHTML = '';
+            relationshipsList.innerHTML = '';
+            telemetryList.innerHTML = '';
+
+            // Properties
+            entities.properties?.forEach(prop => {
+                const li = document.createElement('li');
+                li.className = 'entity-item';
+                li.innerHTML = `
+                    <div class="entity-name">${prop.name}</div>
+                    <div class="entity-type">${prop.type}${prop.unit ? ` (${prop.unit})` : ''}</div>
+                `;
+                propertiesList.appendChild(li);
+            });
+
+            // Relationships
+            entities.relationships?.forEach(rel => {
+                const li = document.createElement('li');
+                li.className = 'entity-item';
+                li.innerHTML = `
+                    <div class="entity-name">${rel.name}</div>
+                    <div class="entity-type">→ ${rel.target_model}</div>
+                `;
+                relationshipsList.appendChild(li);
+            });
+
+            // Telemetry
+            entities.telemetry?.forEach(tel => {
+                const li = document.createElement('li');
+                li.className = 'entity-item';
+                li.innerHTML = `
+                    <div class="entity-name">${tel.name}</div>
+                    <div class="entity-type">${tel.type}${tel.unit ? ` (${tel.unit})` : ''}</div>
+                `;
+                telemetryList.appendChild(li);
+            });
+
+            // Show entities grid if any entities exist
+            const hasEntities = entities.properties?.length > 0 || 
+                              entities.relationships?.length > 0 || 
+                              entities.telemetry?.length > 0;
+            entitiesGrid.style.display = hasEntities ? 'grid' : 'none';
+        }
+
+        function displaySuggestions(suggestions) {
+            const suggestionsBox = document.getElementById('suggestionsBox');
+            const suggestionsList = document.getElementById('suggestionsList');
+
+            if (suggestions && suggestions.length > 0) {
+                suggestionsList.innerHTML = '';
+                suggestions.forEach(suggestion => {
+                    const li = document.createElement('li');
+                    li.textContent = suggestion;
+                    suggestionsList.appendChild(li);
+                });
+                suggestionsBox.style.display = 'block';
+            } else {
+                suggestionsBox.style.display = 'none';
+            }
+        }
+
+        function clearResults() {
+            document.getElementById('userInput').value = '';
+            document.getElementById('dtdlOutput').textContent = 'Your DTDL model will appear here...';
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('resultInfo').style.display = 'none';
+        }
+
+        function copyDTDL() {
+            const dtdlText = document.getElementById('dtdlOutput').textContent;
+            navigator.clipboard.writeText(dtdlText).then(() => {
+                alert('DTDL model copied to clipboard!');
+            });
+        }
+
+        function downloadDTDL() {
+            const dtdlText = document.getElementById('dtdlOutput').textContent;
+            const blob = new Blob([dtdlText], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'digital-twin-model.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Check AI service status on load
+        async function checkAIServiceStatus() {
+            try {
+                const response = await fetch(`${AI_ENGINE_URL}/health`);
+                if (response.ok) {
+                    document.getElementById('aiServiceStatus').textContent = '✅ Online & Ready';
+                    document.getElementById('aiServiceStatus').style.color = '#28a745';
+                } else {
+                    throw new Error('Service not responding');
+                }
+            } catch (error) {
+                document.getElementById('aiServiceStatus').textContent = '❌ Service Unavailable';
+                document.getElementById('aiServiceStatus').style.color = '#dc3545';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAIServiceStatus();
+            
+            // Add enter key support
+            document.getElementById('userInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && e.ctrlKey) {
+                    generateDTDL();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
