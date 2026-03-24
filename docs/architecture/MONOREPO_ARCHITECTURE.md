@@ -4,33 +4,67 @@
 
 ```
 robot_fleet/
-├── 📦 apps/                          # Frontend Applications
-│   ├── cottage_client/               # 🏠 Cottage Client Portal
-│   │   ├── dashboard/              # Web interface (port 5173)
-│   │   ├── ios/                   # iOS app
-│   │   └── package.json
-│   └── fleet_admin/                 # 🤖 Fleet Management System
-│       ├── dashboard/              # Web interface (port 5174)
-│       └── package.json
-├── 📦 packages/                       # Shared Code
-│   ├── shared-types/              # TypeScript definitions
-│   ├── shared-ui/                # React components
-│   ├── shared-api/               # API clients
-│   └── shared-utils/              # Utility functions
-├── ⚙️ services/                      # Backend Services
-│   ├── fleet_control/             # Core robot orchestration
-│   ├── robot_api/                 # Robot data API (port 8002)
-│   └── auth/                      # Authentication service (port 8000)
-├── 🔧 infrastructure/               # DevOps & Deployment
-│   ├── docker-compose.yml         # Multi-service orchestration
-│   ├── Dockerfile                 # Container definitions
-│   ├── tools/                    # Development tools
-│   └── docs/                     # Documentation
+├── 📦 frontend/                      # Frontend Applications
+│   ├── web/                          # Web Applications
+│   │   ├── fleet_dashboard/          # 🤖 Fleet Management Dashboard
+│   │   │   ├── dashboard/            # Web interface (port 5173)
+│   │   │   └── package.json
+│   │   ├── demos/                   # Interactive demos
+│   │   │   ├── dtdl_conversation_demo.html
+│   │   │   └── test_dtdl_ai_demo.html
+│   │   └── shared/                  # Shared frontend code
+│   │       ├── components/
+│   │       ├── types/
+│   │       └── utils/
+│   └── mobile/                       # Mobile apps
+│       └── ios/                     # iOS app (future)
+├── ⚙️ backend/                       # Backend Services
+│   ├── services/                     # Microservices
+│   │   ├── ai_engine/               # AI-powered DTDL generation
+│   │   ├── auth/                    # Authentication service (port 8000)
+│   │   ├── digital_twin_management/ # Digital Twin management
+│   │   ├── event_processor/         # IoT Hub event processing
+│   │   ├── fleet_control/           # Core robot orchestration
+│   │   ├── integration_hub/         # Service integration
+│   │   ├── perception/              # Computer vision
+│   │   ├── robot_api/               # Robot data API (port 8002)
+│   │   ├── robot_simulator/        # Robot fleet simulator
+│   │   ├── simulation/              # Physics simulation
+│   │   └── tasks/                   # Task management
+│   ├── shared/                      # Shared backend code
+│   │   ├── types/
+│   │   ├── utils/
+│   │   └── middleware/
+│   └── ml/                          # Machine Learning
+│       ├── training/                # Training scripts
+│       ├── models/                  # ML models
+│       └── notebooks/              # Jupyter notebooks
+├── 📦 packages/                      # Shared Code
+│   ├── shared-types/               # TypeScript definitions
+│   ├── shared-ui/                  # React components
+│   ├── shared-api/                 # API clients
+│   └── shared-utils/                # Utility functions
+├── 🔧 infrastructure/                # DevOps & Deployment
+│   ├── docker/                     # Docker configurations
+│   ├── deployment/                 # Deployment scripts
+│   │   └── azure/                  # Azure deployment
+│   ├── servers/                    # Simple servers
+│   └── monitoring/                 # Monitoring setup
+├── 📊 scripts/                       # Utility Scripts
+│   ├── tests/                      # Test scripts
+│   ├── utils/                      # Utility scripts
+│   └── maintenance/                # Maintenance scripts
+├── 📚 docs/                          # Documentation
+│   ├── architecture/               # Architecture docs
+│   ├── setup/                      # Setup guides
+│   ├── features/                   # Feature documentation
+│   └── guides/                     # User guides
 ├── 📊 config/                        # Configuration
-│   ├── requirements.txt           # Python dependencies
-│   ├── .env.example             # Environment template
-│   └── .gitignore              # Git ignore rules
-└── 📚 package.json                    # Monorepo workspace config
+│   ├── requirements.txt            # Python dependencies
+│   ├── .env.example              # Environment template
+│   └── .gitignore                 # Git ignore rules
+├── 🤖 fleet_control/                 # Legacy core (keep or integrate)
+└── 📚 package.json                   # Monorepo workspace config
 ```
 
 ## **🚀 Development Workflow**
@@ -45,11 +79,23 @@ npm run install:all
 # Start all services
 npm run dev
 
-# Start only applications
+# Start only frontend
 npm run dev:apps
 
 # Start only backend services
 npm run dev:services
+
+# Start specific frontend
+cd frontend/web/fleet_dashboard
+npm run dev
+
+# Start specific backend service
+cd backend/services/fleet_control
+python main.py
+
+# Start ML training
+cd backend/ml/training
+python automated_training_loop.py
 ```
 
 ### **3. Build All Projects**
