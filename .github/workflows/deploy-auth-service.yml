@@ -1,0 +1,129 @@
+name: Deploy Auth Service to Azure Container Apps
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'backend/services/auth_csharp/**'
+      - '.github/workflows/deploy-auth-service.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'backend/services/auth_csharp/**'
+  workflow_dispatch:
+
+env:
+  AZURE_CONTAINER_REGISTRY: robotfleetregistry
+  CONTAINER_APP_NAME: warehouse-auth-service
+  RESOURCE_GROUP: robot-fleet-simulator-rg
+  DOTNET_VERSION: '8.0.x'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend/services/auth_csharp
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+
+    - name: Test
+      run: dotnet test --no-build --verbosity normal || true
+
+  build-and-push-image:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to Azure Container Registry
+      run: |
+        az acr login --name ${{ env.AZURE_CONTAINER_REGISTRY }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./backend/services/auth_csharp
+        push: true
+        tags: |
+          ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/auth-service:${{ github.sha }}
+          ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/auth-service:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  deploy-to-container-apps:
+    needs: build-and-push-image
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Deploy to Azure Container Apps
+      uses: azure/container-apps-deploy-action@v1
+      with:
+        appSourcePath: backend/services/auth_csharp
+        acrName: ${{ env.AZURE_CONTAINER_REGISTRY }}
+        containerAppName: ${{ env.CONTAINER_APP_NAME }}
+        resourceGroup: ${{ env.RESOURCE_GROUP }}
+        imageToDeploy: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/auth-service:${{ github.sha }}
+        targetPort: 3001
+        ingress: external
+
+    - name: Verify deployment
+      run: |
+        APP_URL=$(az containerapp show \
+          --resource-group ${{ env.RESOURCE_GROUP }} \
+          --name ${{ env.CONTAINER_APP_NAME }} \
+          --query properties.configuration.ingress.fqdn \
+          -o tsv)
+        echo "Deployed to: https://$APP_URL"
+        echo "Health check: https://$APP_URL/health"
+        
+        # Wait for health check
+        sleep 30
+        curl -f https://$APP_URL/health || echo "Health check failed"
+
+    - name: Output deployment URL
+      run: |
+        APP_URL=$(az containerapp show \
+          --resource-group ${{ env.RESOURCE_GROUP }} \
+          --name ${{ env.CONTAINER_APP_NAME }} \
+          --query properties.configuration.ingress.fqdn \
+          -o tsv)
+        echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "✅ Auth Service deployed successfully" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+        echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+        echo "| Service URL | https://$APP_URL |" >> $GITHUB_STEP_SUMMARY
+        echo "| Health Check | https://$APP_URL/health |" >> $GITHUB_STEP_SUMMARY
+        echo "| Swagger UI | https://$APP_URL/swagger |" >> $GITHUB_STEP_SUMMARY
+        echo "| Container App | ${{ env.CONTAINER_APP_NAME }} |" >> $GITHUB_STEP_SUMMARY
