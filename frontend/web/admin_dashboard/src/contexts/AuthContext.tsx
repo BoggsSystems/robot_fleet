@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { User } from '../types';
+import { authAPI } from '../services/api';
 
 interface AuthContextType {
   user: User | null;
@@ -8,40 +9,61 @@ interface AuthContextType {
   isLoading: boolean;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
+  error: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Check for existing session on mount
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = Cookies.get('adminToken');
+      if (token) {
+        try {
+          const response = await authAPI.getProfile();
+          setUser(response.admin);
+        } catch (err) {
+          // Token invalid, clear it
+          Cookies.remove('adminToken');
+        }
+      }
+      setIsLoading(false);
+    };
+
+    checkAuth();
+  }, []);
 
   const login = useCallback(async (username: string, password: string) => {
     setIsLoading(true);
-    // TODO: Replace with actual API call
-    // Mock successful login for Phase 1
-    const mockUser: User = {
-      id: '1',
-      username,
-      email: 'admin@robotfleet.com',
-      role: 'superadmin',
-      profile: {
-        firstName: 'Super',
-        lastName: 'Admin',
-        department: 'Management',
-        phone: '+1-555-0100'
-      },
-      permissions: ['*'],
-      lastLogin: new Date().toISOString(),
-      createdAt: new Date().toISOString()
-    };
+    setError(null);
     
-    setUser(mockUser);
-    Cookies.set('adminToken', 'mock-token', { expires: 1 });
-    setIsLoading(false);
+    try {
+      const response = await authAPI.login(username, password);
+      
+      // Store token
+      Cookies.set('adminToken', response.token, { expires: 1 });
+      
+      // Set user from response
+      setUser(response.admin);
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Login failed');
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    try {
+      await authAPI.logout();
+    } catch (err) {
+      // Ignore logout errors
+    }
     setUser(null);
     Cookies.remove('adminToken');
   }, []);
@@ -52,7 +74,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       isAuthenticated: !!user,
       isLoading,
       login,
-      logout
+      logout,
+      error
     }}>
       {children}
     </AuthContext.Provider>

@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
 const Login: React.FC = () => {
-  const { login, isLoading } = useAuth();
+  const { login, isLoading, error: authError } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (authError) {
+      setError(authError);
+    }
+  }, [authError]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,8 +24,11 @@ const Login: React.FC = () => {
 
     try {
       await login(username, password);
-    } catch (err) {
-      setError('Invalid credentials');
+    } catch (err: any) {
+      // Error is already set in AuthContext, but set a fallback here
+      if (!err.response?.data?.error) {
+        setError('Login failed. Please check your credentials and try again.');
+      }
     }
   };
 
@@ -155,7 +164,7 @@ const Login: React.FC = () => {
           color: '#64748b',
           textAlign: 'center'
         }}>
-          Demo: Use any username/password for Phase 1 testing
+          Demo credentials: admin / admin123
         </p>
       </div>
     </div>

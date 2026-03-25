@@ -1,78 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Client, Robot, DashboardStats, SystemHealth } from '../types';
-
-// Mock data for Phase 1
-const mockStats: DashboardStats = {
-  totalClients: 12,
-  activeClients: 8,
-  trialClients: 3,
-  totalRobots: 47,
-  activeRobots: 38,
-  monthlyRevenue: 28500,
-  systemUptime: 99.8
-};
-
-const mockClients: Client[] = [
-  {
-    id: '1',
-    name: 'Acme Distribution',
-    status: 'active',
-    plan: 'professional',
-    contact: { email: 'admin@acme.com', phone: '+1-555-0101', address: '123 Main St, NY' },
-    fleet: { totalRobots: 8, activeRobots: 6, idleRobots: 2, maintenanceRobots: 0 },
-    warehouse: { name: 'NYC Distribution', location: 'New York, NY', totalArea: 50000, zones: 4 },
-    metrics: { tasksCompleted: 1247, uptime: 98.5, lastActivity: '2024-01-15T10:30:00Z' },
-    createdAt: '2023-08-01T00:00:00Z',
-    subscription: { startDate: '2023-08-01', endDate: '2024-08-01', mrr: 5000 }
-  },
-  {
-    id: '2',
-    name: 'TechFlow Logistics',
-    status: 'active',
-    plan: 'enterprise',
-    contact: { email: 'ops@techflow.com', phone: '+1-555-0102', address: '456 Tech Blvd, CA' },
-    fleet: { totalRobots: 15, activeRobots: 12, idleRobots: 2, maintenanceRobots: 1 },
-    warehouse: { name: 'SF Bay Hub', location: 'San Francisco, CA', totalArea: 100000, zones: 6 },
-    metrics: { tasksCompleted: 3421, uptime: 99.1, lastActivity: '2024-01-15T09:45:00Z' },
-    createdAt: '2023-06-15T00:00:00Z',
-    subscription: { startDate: '2023-06-15', endDate: '2024-06-15', mrr: 12000 }
-  },
-  {
-    id: '3',
-    name: 'StartupXYZ',
-    status: 'trial',
-    plan: 'starter',
-    contact: { email: 'hello@startupxyz.com', phone: '+1-555-0103', address: '789 Startup Ave, TX' },
-    fleet: { totalRobots: 2, activeRobots: 2, idleRobots: 0, maintenanceRobots: 0 },
-    warehouse: { name: 'Austin Mini-Warehouse', location: 'Austin, TX', totalArea: 15000, zones: 2 },
-    metrics: { tasksCompleted: 89, uptime: 95.0, lastActivity: '2024-01-14T16:20:00Z' },
-    createdAt: '2024-01-01T00:00:00Z',
-    subscription: { startDate: '2024-01-01', endDate: '2024-02-01', mrr: 0 }
-  }
-];
-
-const mockHealth: SystemHealth = {
-  overall: 'healthy',
-  services: {
-    aiEngine: { status: 'healthy', uptime: 99.9, lastChecked: '2024-01-15T10:00:00Z', responseTime: 45 },
-    fleetControl: { status: 'healthy', uptime: 99.8, lastChecked: '2024-01-15T10:00:00Z', responseTime: 32 },
-    digitalTwin: { status: 'healthy', uptime: 99.9, lastChecked: '2024-01-15T10:00:00Z', responseTime: 28 },
-    eventProcessor: { status: 'healthy', uptime: 99.7, lastChecked: '2024-01-15T10:00:00Z', responseTime: 15 },
-    auth: { status: 'healthy', uptime: 100, lastChecked: '2024-01-15T10:00:00Z', responseTime: 12 }
-  },
-  metrics: {
-    totalRobots: 47,
-    activeClients: 8,
-    apiRequests: 125000,
-    errorRate: 0.02,
-    avgResponseTime: 26
-  },
-  alerts: [
-    { id: '1', severity: 'warning', message: 'Robot R-15 battery low (15%)', source: 'fleet-control', clientId: '2', robotId: 'R-15', createdAt: '2024-01-15T09:30:00Z', acknowledged: false },
-    { id: '2', severity: 'info', message: 'Client trial expires in 7 days', source: 'billing', clientId: '3', createdAt: '2024-01-14T00:00:00Z', acknowledged: false }
-  ]
-};
+import { Client, DashboardStats, SystemHealth } from '../types';
+import { dashboardAPI, clientAPI, systemAPI } from '../services/api';
 
 const StatCard: React.FC<{ label: string; value: string | number; trend?: string; color: string }> = ({ label, value, trend, color }) => (
   <div style={{
@@ -88,21 +17,89 @@ const StatCard: React.FC<{ label: string; value: string | number; trend?: string
 );
 
 const Dashboard: React.FC = () => {
-  const [stats] = useState<DashboardStats>(mockStats);
-  const [clients] = useState<Client[]>(mockClients);
-  const [health] = useState<SystemHealth>(mockHealth);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [health, setHealth] = useState<SystemHealth | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Simulate data loading
-    setTimeout(() => setLoading(false), 500);
+    const fetchDashboardData = async () => {
+      try {
+        setLoading(true);
+        
+        const [statsRes, clientsRes, healthRes] = await Promise.all([
+          dashboardAPI.getStats(),
+          clientAPI.getClients(),
+          systemAPI.getHealth()
+        ]);
+        
+        setStats(statsRes);
+        setClients(clientsRes.clients.slice(0, 5));
+        
+        const healthData = healthRes;
+        setHealth({
+          overall: healthData.overall,
+          services: {
+            aiEngine: healthData.services.ai_engine,
+            fleetControl: healthData.services.fleet_control,
+            digitalTwin: healthData.services.digital_twin,
+            eventProcessor: healthData.services.event_processor,
+            auth: healthData.services.auth
+          },
+          metrics: healthData.metrics,
+          alerts: []
+        });
+        
+        setError(null);
+      } catch (err: any) {
+        setError(err.response?.data?.error || 'Failed to load dashboard data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+    const interval = setInterval(fetchDashboardData, 30000);
+    return () => clearInterval(interval);
   }, []);
 
-  if (loading) {
+  if (error) {
+    return (
+      <div style={{ padding: '40px', textAlign: 'center' }}>
+        <div style={{ 
+          backgroundColor: '#dc262620', 
+          border: '1px solid #dc2626',
+          borderRadius: '8px',
+          padding: '20px',
+          maxWidth: '500px',
+          margin: '0 auto'
+        }}>
+          <p style={{ color: '#dc2626', fontSize: '16px', marginBottom: '8px' }}>Error loading dashboard</p>
+          <p style={{ color: '#94a3b8', fontSize: '14px' }}>{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            style={{
+              marginTop: '16px',
+              padding: '8px 16px',
+              backgroundColor: '#3b82f6',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer'
+            }}
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!stats || !health) {
     return (
       <div style={{ padding: '40px', textAlign: 'center', color: '#94a3b8' }}>
-        <div style={{ fontSize: '24px', marginBottom: '16px' }}>⏳</div>
-        <p>Loading dashboard...</p>
+        <p>No data available</p>
       </div>
     );
   }
@@ -126,10 +123,10 @@ const Dashboard: React.FC = () => {
         gap: '16px',
         marginBottom: '32px'
       }}>
-        <StatCard label="Total Clients" value={stats.totalClients} trend="+2 this month" color="#3b82f6" />
-        <StatCard label="Active Robots" value={`${stats.activeRobots}/${stats.totalRobots}`} color="#22c55e" />
-        <StatCard label="Monthly Revenue" value={`$${stats.monthlyRevenue.toLocaleString()}`} trend="+12% vs last month" color="#a855f7" />
-        <StatCard label="System Uptime" value={`${stats.systemUptime}%`} color="#f59e0b" />
+        <StatCard label="Total Clients" value={stats.total_clients} trend="+2 this month" color="#3b82f6" />
+        <StatCard label="Active Robots" value={`${stats.active_robots}/${stats.total_robots}`} color="#22c55e" />
+        <StatCard label="Monthly Revenue" value={`$${stats.monthly_revenue.toLocaleString()}`} trend="+12% vs last month" color="#a855f7" />
+        <StatCard label="System Uptime" value={`${stats.system_uptime}%`} color="#f59e0b" />
       </div>
 
       {/* Two Column Layout */}
