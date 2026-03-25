@@ -11,9 +11,44 @@ app.use(express.json());
 
 // In-memory user storage (in production, use a database)
 const users = [];
+const adminUsers = []; // Separate storage for admin users
+
+// Admin roles and permissions
+const ADMIN_ROLES = {
+  superadmin: ['*'], // All permissions
+  support: ['client:read', 'fleet:read', 'user:read', 'system:read'],
+  billing: ['client:read', 'client:write', 'billing:read', 'billing:write'],
+  technical: ['fleet:read', 'fleet:write', 'system:read', 'system:admin']
+};
+
+// Default superadmin user (create on startup)
+const createDefaultSuperAdmin = async () => {
+  const existingSuperAdmin = adminUsers.find(u => u.username === 'admin');
+  if (!existingSuperAdmin) {
+    const hashedPassword = await bcrypt.hash('admin123', 10);
+    adminUsers.push({
+      id: 1,
+      username: 'admin',
+      email: 'admin@robotfleet.com',
+      password: hashedPassword,
+      role: 'superadmin',
+      permissions: ADMIN_ROLES.superadmin,
+      profile: {
+        firstName: 'Super',
+        lastName: 'Admin',
+        department: 'Management',
+        phone: '+1-555-0100'
+      },
+      createdAt: new Date(),
+      lastLogin: null
+    });
+    console.log('Default superadmin created: admin/admin123');
+  }
+};
 
 // JWT Secret (in production, use environment variable)
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || 'admin-secret-key';
 
 // Authentication middleware
 const authenticateToken = (req, res, next) => {
@@ -31,6 +66,42 @@ const authenticateToken = (req, res, next) => {
     req.user = user;
     next();
   });
+};
+
+// Admin authentication middleware
+const authenticateAdminToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ error: 'Admin access token required' });
+  }
+
+  jwt.verify(token, ADMIN_JWT_SECRET, (err, admin) => {
+    if (err) {
+      return res.status(403).json({ error: 'Invalid admin token' });
+    }
+    req.admin = admin;
+    next();
+  });
+};
+
+// Check permission middleware
+const requirePermission = (permission) => {
+  return (req, res, next) => {
+    if (!req.admin) {
+      return res.status(401).json({ error: 'Admin authentication required' });
+    }
+    
+    const hasPermission = req.admin.permissions.includes('*') || 
+                         req.admin.permissions.includes(permission);
+    
+    if (!hasPermission) {
+      return res.status(403).json({ error: 'Permission denied' });
+    }
+    
+    next();
+  };
 };
 
 // Routes
@@ -117,6 +188,143 @@ app.post('/auth/logout', authenticateToken, (req, res) => {
   res.json({ message: 'Logout successful' });
 });
 
+// Admin Authentication Endpoints
+app.post('/auth/admin/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    // Find admin user
+    const admin = adminUsers.find(u => u.username === username);
+    if (!admin) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Verify password
+    const validPassword = await bcrypt.compare(password, admin.password);
+    if (!validPassword) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Update last login
+    admin.lastLogin = new Date();
+
+    // Generate admin JWT token
+    const token = jwt.sign({ 
+      adminId: admin.id, 
+      username: admin.username,
+      role: admin.role,
+      permissions: admin.permissions
+    }, ADMIN_JWT_SECRET, { expiresIn: '8h' });
+
+    res.json({
+      message: 'Admin login successful',
+      token,
+      admin: {
+        id: admin.id,
+        username: admin.username,
+        email: admin.email,
+        role: admin.role,
+        permissions: admin.permissions,
+        profile: admin.profile,
+        lastLogin: admin.lastLogin
+      }
+    });
+  } catch (error) {
+    console.error('Admin login error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.get('/auth/admin/profile', authenticateAdminToken, (req, res) => {
+  const admin = adminUsers.find(u => u.id === req.admin.adminId);
+  if (!admin) {
+    return res.status(404).json({ error: 'Admin user not found' });
+  }
+
+  res.json({
+    admin: {
+      id: admin.id,
+      username: admin.username,
+      email: admin.email,
+      role: admin.role,
+      permissions: admin.permissions,
+      profile: admin.profile,
+      lastLogin: admin.lastLogin,
+      createdAt: admin.createdAt
+    }
+  });
+});
+
+app.post('/auth/admin/logout', authenticateAdminToken, (req, res) => {
+  res.json({ message: 'Admin logout successful' });
+});
+
+// Admin User Management (superadmin only)
+app.post('/auth/admin/users', authenticateAdminToken, requirePermission('user:write'), async (req, res) => {
+  try {
+    const { username, password, email, role, profile } = req.body;
+
+    // Validate role
+    if (!ADMIN_ROLES[role]) {
+      return res.status(400).json({ error: 'Invalid role' });
+    }
+
+    // Check if username already exists
+    const existingAdmin = adminUsers.find(u => u.username === username);
+    if (existingAdmin) {
+      return res.status(400).json({ error: 'Username already exists' });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create admin user
+    const newAdmin = {
+      id: adminUsers.length + 1,
+      username,
+      email,
+      password: hashedPassword,
+      role,
+      permissions: ADMIN_ROLES[role],
+      profile: profile || {},
+      createdAt: new Date(),
+      lastLogin: null,
+      createdBy: req.admin.adminId
+    };
+
+    adminUsers.push(newAdmin);
+
+    res.status(201).json({
+      message: 'Admin user created successfully',
+      admin: {
+        id: newAdmin.id,
+        username: newAdmin.username,
+        email: newAdmin.email,
+        role: newAdmin.role,
+        permissions: newAdmin.permissions,
+        profile: newAdmin.profile
+      }
+    });
+  } catch (error) {
+    console.error('Create admin error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+app.get('/auth/admin/users', authenticateAdminToken, requirePermission('user:read'), (req, res) => {
+  const adminList = adminUsers.map(admin => ({
+    id: admin.id,
+    username: admin.username,
+    email: admin.email,
+    role: admin.role,
+    profile: admin.profile,
+    lastLogin: admin.lastLogin,
+    createdAt: admin.createdAt
+  }));
+
+  res.json({ users: adminList });
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date() });
@@ -129,8 +337,14 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`Auth server running on port ${PORT}`);
+  await createDefaultSuperAdmin();
 });
 
-module.exports = app;
+module.exports = { 
+  app, 
+  authenticateToken, 
+  authenticateAdminToken, 
+  requirePermission 
+};
