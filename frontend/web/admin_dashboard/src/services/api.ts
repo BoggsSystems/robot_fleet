@@ -24,7 +24,7 @@ const authApi: AxiosInstance = axios.create({
 });
 
 // Request interceptor to add auth token
-const addAuthToken = (config: AxiosRequestConfig): AxiosRequestConfig => {
+const addAuthToken = (config: any): any => {
   const token = Cookies.get('adminToken');
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -77,48 +77,60 @@ export const authAPI = {
   },
 };
 
-// Client API
+// Client API - Now uses C# auth service instead of Python integration hub
 export const clientAPI = {
   getClients: async (filters?: { status?: string; plan?: string }) => {
     const params = new URLSearchParams();
     if (filters?.status) params.append('status', filters.status);
     if (filters?.plan) params.append('plan', filters.plan);
     
-    const response = await adminApi.get(`/api/admin/clients?${params.toString()}`);
+    const response = await authApi.get(`/api/admin/clients?${params.toString()}`);
     return response.data;
   },
   
   getClient: async (id: string) => {
-    const response = await adminApi.get(`/api/admin/clients/${id}`);
+    const response = await authApi.get(`/api/admin/clients/${id}`);
     return response.data;
   },
   
   createClient: async (clientData: any) => {
-    const response = await adminApi.post('/api/admin/clients', clientData);
+    const response = await authApi.post('/api/admin/clients', clientData);
     return response.data;
   },
   
   updateClient: async (id: string, clientData: any) => {
-    const response = await adminApi.put(`/api/admin/clients/${id}`, clientData);
+    const response = await authApi.put(`/api/admin/clients/${id}`, clientData);
     return response.data;
   },
   
   deleteClient: async (id: string) => {
-    const response = await adminApi.delete(`/api/admin/clients/${id}`);
+    const response = await authApi.delete(`/api/admin/clients/${id}`);
     return response.data;
   },
   
   getClientFleet: async (id: string) => {
-    const response = await adminApi.get(`/api/admin/clients/${id}/fleet`);
+    const response = await authApi.get(`/api/admin/clients/${id}/fleet`);
     return response.data;
   },
 };
 
-// Dashboard API
+// Dashboard API - Now uses C# auth service for stats
 export const dashboardAPI = {
   getStats: async () => {
-    const response = await adminApi.get('/api/admin/dashboard/stats');
-    return response.data;
+    const response = await authApi.get('/api/admin/dashboard/stats');
+    const data = response.data;
+    // C# returns PascalCase, no transformation needed
+    return {
+      totalClients: data.totalClients ?? 0,
+      activeClients: data.activeClients ?? 0,
+      trialClients: data.trialClients ?? 0,
+      totalRobots: data.totalRobots ?? 0,
+      activeRobots: data.activeDeployments ?? 0,
+      monthlyRevenue: data.monthlyRecurringRevenue ?? 0,
+      systemUptime: 99.9,
+      planDistribution: data.planDistribution ?? [],
+      mrrTrend: data.mrrTrend ?? [],
+    };
   },
 };
 

@@ -4,8 +4,29 @@ from datetime import datetime
 from typing import Dict, List, Optional
 from enum import Enum
 import uvicorn
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
 
 app = FastAPI(title="Warehouse Integration Hub", version="1.0.0")
+
+# Request validation error handler
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc):
+    errors = exc.errors()
+    print(f"[VALIDATION ERROR] {errors}")
+    return {
+        "detail": "Validation failed",
+        "errors": [{"field": " -> ".join(str(x) for x in e["loc"]), "message": e["msg"], "type": e["type"]} for e in errors]
+    }
+
+# Enable CORS for admin dashboard
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins for now
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Pydantic models
 class ServiceStatus(BaseModel):
@@ -38,20 +59,23 @@ class ClientStatus(str, Enum):
     trial = "trial"
 
 class ClientPlan(str, Enum):
-    starter = "starter"
-    professional = "professional"
+    hobby = "hobby"
+    pro = "pro"
+    business = "business"
     enterprise = "enterprise"
+
+class ClientLocation(BaseModel):
+    name: str
+    address: str
+    type: str = "primary"
+    classification: str = "indoor"
+    size: str = ""
+    operatingHours: str = "24/7"
 
 class ClientContact(BaseModel):
     email: str
-    phone: str
-    address: str
-
-class ClientWarehouse(BaseModel):
-    name: str
-    location: str
-    total_area: float
-    zones: int
+    phone: Optional[str] = ""
+    address: Optional[str] = ""
 
 class ClientFleet(BaseModel):
     total_robots: int
@@ -69,8 +93,17 @@ class Client(BaseModel):
     name: str
     status: ClientStatus
     plan: ClientPlan
-    contact: ClientContact
-    warehouse: ClientWarehouse
+    entityType: Optional[str] = "business"
+    industry: Optional[str] = None
+    email: str
+    phone: Optional[str] = ""
+    taxId: Optional[str] = ""
+    locations: List[ClientLocation] = []
+    fleetSize: int = 0
+    deploymentPriority: str = "standard"
+    integrations: List[str] = []
+    contact: Optional[ClientContact] = None
+    warehouse: Optional[Dict] = None
     fleet: ClientFleet
     subscription: ClientSubscription
     created_at: str
@@ -78,9 +111,16 @@ class Client(BaseModel):
 
 class CreateClientRequest(BaseModel):
     name: str
+    email: str
+    phone: Optional[str] = ""
     plan: ClientPlan
-    contact: ClientContact
-    warehouse: ClientWarehouse
+    entityType: Optional[str] = "business"
+    industry: Optional[str] = None
+    taxId: Optional[str] = ""
+    locations: List[ClientLocation] = []
+    fleetSize: int = 1
+    deploymentPriority: str = "standard"
+    integrations: List[str] = []
 
 class UpdateClientRequest(BaseModel):
     name: Optional[str] = None
@@ -110,7 +150,7 @@ clients_db: Dict[str, Client] = {
         id="1",
         name="Acme Distribution",
         status=ClientStatus.active,
-        plan=ClientPlan.professional,
+        plan=ClientPlan.business,
         contact=ClientContact(email="admin@acme.com", phone="+1-555-0101", address="123 Main St, NY"),
         warehouse=ClientWarehouse(name="NYC Distribution", location="New York, NY", total_area=50000, zones=4),
         fleet=ClientFleet(total_robots=8, active_robots=6, idle_robots=2, maintenance_robots=0),
@@ -132,7 +172,7 @@ clients_db: Dict[str, Client] = {
         id="3",
         name="StartupXYZ",
         status=ClientStatus.trial,
-        plan=ClientPlan.starter,
+        plan=ClientPlan.hobby,
         contact=ClientContact(email="hello@startupxyz.com", phone="+1-555-0103", address="789 Startup Ave, TX"),
         warehouse=ClientWarehouse(name="Austin Mini-Warehouse", location="Austin, TX", total_area=15000, zones=2),
         fleet=ClientFleet(total_robots=2, active_robots=2, idle_robots=0, maintenance_robots=0),
@@ -261,29 +301,58 @@ async def get_client(client_id: str, admin: dict = Depends(verify_admin_token)):
 async def create_client(request: CreateClientRequest, admin: dict = Depends(verify_admin_token)):
     """Create a new client"""
     import uuid
+    import traceback
     
-    new_id = str(uuid.uuid4())
-    now = datetime.utcnow().isoformat()
+    print(f"[CREATE CLIENT] Received request: {request.model_dump()}")
     
-    new_client = Client(
-        id=new_id,
-        name=request.name,
-        status=ClientStatus.trial,
-        plan=request.plan,
-        contact=request.contact,
-        warehouse=request.warehouse,
-        fleet=ClientFleet(total_robots=0, active_robots=0, idle_robots=0, maintenance_robots=0),
-        subscription=ClientSubscription(
-            start_date=now[:10],
-            end_date="",
-            mrr=0 if request.plan == ClientPlan.starter else (5000 if request.plan == ClientPlan.professional else 12000)
-        ),
-        created_at=now
-    )
-    
-    clients_db[new_id] = new_client
-    
-    return {"message": "Client created successfully", "client": new_client}
+    try:
+        new_id = str(uuid.uuid4())
+        now = datetime.utcnow().isoformat()
+        
+        # Map plan to MRR
+        plan_mrr = {
+            ClientPlan.hobby: 99,
+            ClientPlan.pro: 499,
+            ClientPlan.business: 2000,
+            ClientPlan.enterprise: 0
+        }
+        
+        new_client = Client(
+            id=new_id,
+            name=request.name,
+            status=ClientStatus.trial,
+            plan=request.plan,
+            entityType=request.entityType,
+            industry=request.industry,
+            email=request.email,
+            phone=request.phone,
+            taxId=request.taxId,
+            locations=request.locations,
+            fleetSize=request.fleetSize,
+            deploymentPriority=request.deploymentPriority,
+            integrations=request.integrations,
+            fleet=ClientFleet(
+                total_robots=request.fleetSize,
+                active_robots=0,
+                idle_robots=request.fleetSize,
+                maintenance_robots=0
+            ),
+            subscription=ClientSubscription(
+                start_date=now[:10],
+                end_date="",
+                mrr=plan_mrr.get(request.plan, 0)
+            ),
+            created_at=now
+        )
+        
+        clients_db[new_id] = new_client
+        print(f"[CREATE CLIENT] Success: Created client {new_id}")
+        
+        return {"message": "Client created successfully", "client": new_client}
+    except Exception as e:
+        print(f"[CREATE CLIENT] Error: {str(e)}")
+        print(f"[CREATE CLIENT] Traceback: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Server error: {str(e)}")
 
 @app.put("/api/admin/clients/{client_id}")
 async def update_client(

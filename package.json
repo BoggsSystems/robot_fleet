@@ -3,11 +3,6 @@
   "version": "1.0.0",
   "description": "Robot Fleet Management System - Monorepo",
   "private": true,
-  "workspaces": [
-    "frontend/web/*",
-    "packages/*",
-    "backend/services/*"
-  ],
   "scripts": {
     "dev": "concurrently \"npm run dev:apps\" \"npm run dev:services\"",
     "dev:apps": "concurrently \"npm run dev:cottage\" \"npm run dev:fleet\"",

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Client } from '../types';
 import { clientAPI } from '../services/api';
+import CreateClientWizard from '../components/CreateClientWizard';
 
 const Clients: React.FC = () => {
   const [clients, setClients] = useState<Client[]>([]);
@@ -9,6 +10,7 @@ const Clients: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [planFilter, setPlanFilter] = useState<string>('');
+  const [isWizardOpen, setIsWizardOpen] = useState(false);
 
   useEffect(() => {
     fetchClients();
@@ -104,19 +106,20 @@ const Clients: React.FC = () => {
           </h1>
           <p style={{ color: '#94a3b8' }}>Manage all client accounts and their fleets</p>
         </div>
-        <Link 
-          to="/clients/new"
+        <button 
+          onClick={() => setIsWizardOpen(true)}
           style={{
             padding: '12px 24px',
             backgroundColor: '#3b82f6',
             color: 'white',
             borderRadius: '8px',
-            textDecoration: 'none',
-            fontWeight: 500
+            border: 'none',
+            fontWeight: 500,
+            cursor: 'pointer',
           }}
         >
           + Add Client
-        </Link>
+        </button>
       </div>
 
       {/* Filters */}
@@ -197,7 +200,9 @@ const Clients: React.FC = () => {
                     <p style={{ fontSize: '16px', fontWeight: 500, color: '#f8fafc', marginBottom: '4px' }}>
                       {client.name}
                     </p>
-                    <p style={{ fontSize: '13px', color: '#94a3b8' }}>{client.warehouse.location}</p>
+                    <p style={{ fontSize: '13px', color: '#94a3b8' }}>
+                      {client.warehouse?.location || client.locations?.[0]?.address || 'No location set'}
+                    </p>
                   </td>
                   <td style={{ padding: '16px' }}>
                     <span style={{
@@ -219,12 +224,12 @@ const Clients: React.FC = () => {
                   </td>
                   <td style={{ padding: '16px' }}>
                     <span style={{ fontSize: '14px', color: '#e2e8f0' }}>
-                      {client.fleet.activeRobots}/{client.fleet.totalRobots} active
+                      {client.fleet?.activeRobots || 0}/{client.fleet?.totalRobots || client.fleetSize || 0} active
                     </span>
                   </td>
                   <td style={{ padding: '16px' }}>
                     <span style={{ fontSize: '14px', color: '#e2e8f0' }}>
-                      ${client.subscription.mrr.toLocaleString()}
+                      ${(client.subscription?.mrr || 0).toLocaleString()}
                     </span>
                   </td>
                   <td style={{ padding: '16px', textAlign: 'right' }}>
@@ -273,6 +278,12 @@ const Clients: React.FC = () => {
           </div>
         )}
       </div>
+
+      <CreateClientWizard
+        isOpen={isWizardOpen}
+        onClose={() => setIsWizardOpen(false)}
+        onSuccess={fetchClients}
+      />
     </div>
   );
 };

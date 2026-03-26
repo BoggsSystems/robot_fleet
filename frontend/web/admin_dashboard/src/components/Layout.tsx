@@ -86,12 +86,21 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             style={{
               width: '100%',
               padding: '8px 16px',
-              backgroundColor: '#dc2626',
-              color: 'white',
-              border: 'none',
+              backgroundColor: 'transparent',
+              border: '1px solid #475569',
               borderRadius: '6px',
               fontSize: '14px',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              color: '#94a3b8',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#334155';
+              e.currentTarget.style.color = '#f8fafc';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = '#94a3b8';
             }}
           >
             Logout

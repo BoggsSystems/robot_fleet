@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace AuthService.Models;
 
 public enum AdminRole
@@ -18,7 +20,12 @@ public class AdminProfile
 
 public class AdminUser
 {
+    [JsonIgnore]  // Don't serialize Id as 'id' - we use a separate Cosmos DB id
     public int Id { get; set; }
+    
+    [JsonPropertyName("id")]  // This maps to Cosmos DB's required 'id' field
+    public string CosmosId => Username;  // Use username as the document id
+    
     public string Username { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty; // Hashed

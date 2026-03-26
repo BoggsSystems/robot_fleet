@@ -104,7 +104,7 @@ echo "📋 Step 3: Building container images..."
 
 # Build C# Digital Twin Service
 echo "🏗️ Building C# Digital Twin Service..."
-cd services/digital_twin_management
+cd backend/services/digital_twin_management
 docker build -t $REGISTRY/warehouse-digital-twin:latest .
 docker push $REGISTRY/warehouse-digital-twin:latest
 
@@ -120,10 +120,37 @@ cd ../integration_hub
 docker build -t $REGISTRY/warehouse-integration-hub:latest .
 docker push $REGISTRY/warehouse-integration-hub:latest
 
-cd ../../
+# Build Auth Service
+echo "🔐 Building Auth Service..."
+cd ../auth_csharp
+docker build -t $REGISTRY/warehouse-auth-service:latest .
+docker push $REGISTRY/warehouse-auth-service:latest
+
+cd ../../../
 
 echo ""
-echo "📋 Step 4: Deploying services to Container Apps..."
+echo "📋 Step 4: Building Admin Web Dashboard..."
+
+# Build Admin Web Dashboard
+echo "🌐 Building Admin Web Dashboard..."
+cd frontend/web/admin_dashboard
+
+# Get auth service URL for build
+AUTH_URL=$(az containerapp show \
+    --name warehouse-auth-service \
+    --resource-group $RESOURCE_GROUP \
+    --query properties.configuration.ingress.fqdn \
+    --output tsv 2>/dev/null || echo "warehouse-auth-service.kindmoss-6eac8399.eastus.azurecontainerapps.net")
+
+docker build \
+    --build-arg REACT_APP_AUTH_URL=https://$AUTH_URL \
+    -t $REGISTRY/admin-webapp:latest .
+docker push $REGISTRY/admin-webapp:latest
+
+cd ../../../
+
+echo ""
+echo "📋 Step 5: Deploying services to Container Apps..."
 
 # Deploy C# Digital Twin Service
 echo "🏭 Deploying C# Digital Twin Service..."
@@ -177,6 +204,32 @@ az containerapp create \
     --ingress external \
     --target-port 9000
 
+# Deploy Auth Service
+echo "🔐 Deploying Auth Service..."
+az containerapp create \
+    --name warehouse-auth-service \
+    --resource-group $RESOURCE_GROUP \
+    --environment $ENVIRONMENT \
+    --image $REGISTRY/warehouse-auth-service:latest \
+    --cpu 0.5 \
+    --memory 1Gi \
+    --env-vars \
+        ASPNETCORE_ENVIRONMENT="Production" \
+    --ingress external \
+    --target-port 3001
+
+# Deploy Admin Web Dashboard
+echo "🌐 Deploying Admin Web Dashboard..."
+az containerapp create \
+    --name admin-webapp \
+    --resource-group $RESOURCE_GROUP \
+    --environment $ENVIRONMENT \
+    --image $REGISTRY/admin-webapp:latest \
+    --cpu 0.5 \
+    --memory 1Gi \
+    --ingress external \
+    --target-port 80
+
 echo ""
 echo "📋 Step 5: Getting service URLs..."
 
@@ -199,6 +252,18 @@ INTEGRATION_HUB_URL=$(az containerapp show \
     --query properties.configuration.ingress.fqdn \
     --output tsv)
 
+ADMIN_WEBAPP_URL=$(az containerapp show \
+    --name admin-webapp \
+    --resource-group $RESOURCE_GROUP \
+    --query properties.configuration.ingress.fqdn \
+    --output tsv)
+
+AUTH_SERVICE_URL=$(az containerapp show \
+    --name warehouse-auth-service \
+    --resource-group $RESOURCE_GROUP \
+    --query properties.configuration.ingress.fqdn \
+    --output tsv)
+
 echo ""
 echo "🎉 Deployment Complete!"
 echo ""
@@ -206,6 +271,8 @@ echo "📋 Service URLs:"
 echo "🏭 C# Digital Twin Service: https://$DIGITAL_TWIN_URL"
 echo "🧠 Python AI Engine: https://$AI_ENGINE_URL"
 echo "🔄 Integration Hub: https://$INTEGRATION_HUB_URL"
+echo "🔐 Auth Service: https://$AUTH_SERVICE_URL"
+echo "🌐 Admin Dashboard: https://$ADMIN_WEBAPP_URL"
 echo ""
 echo "📋 Health Check URLs:"
 echo "🏭 Digital Twin Health: https://$DIGITAL_TWIN_URL/health"

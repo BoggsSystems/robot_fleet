@@ -218,25 +218,25 @@ const SystemHealthPage: React.FC = () => {
           <div style={{ padding: '20px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid #334155' }}>
               <span style={{ fontSize: '14px', color: '#94a3b8' }}>Total Robots</span>
-              <span style={{ fontSize: '16px', fontWeight: 500, color: '#f8fafc' }}>{health.metrics.total_robots}</span>
+              <span style={{ fontSize: '16px', fontWeight: 500, color: '#f8fafc' }}>{health.metrics.totalRobots}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid #334155' }}>
               <span style={{ fontSize: '14px', color: '#94a3b8' }}>Active Clients</span>
-              <span style={{ fontSize: '16px', fontWeight: 500, color: '#f8fafc' }}>{health.metrics.active_clients}</span>
+              <span style={{ fontSize: '16px', fontWeight: 500, color: '#f8fafc' }}>{health.metrics.activeClients}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid #334155' }}>
               <span style={{ fontSize: '14px', color: '#94a3b8' }}>API Requests</span>
-              <span style={{ fontSize: '16px', fontWeight: 500, color: '#f8fafc' }}>{health.metrics.api_requests?.toLocaleString()}</span>
+              <span style={{ fontSize: '16px', fontWeight: 500, color: '#f8fafc' }}>{health.metrics.apiRequests?.toLocaleString()}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid #334155' }}>
               <span style={{ fontSize: '14px', color: '#94a3b8' }}>Error Rate</span>
-              <span style={{ fontSize: '16px', fontWeight: 500, color: health.metrics.error_rate > 0.05 ? '#dc2626' : '#22c55e' }}>
-                {(health.metrics.error_rate * 100).toFixed(2)}%
+              <span style={{ fontSize: '16px', fontWeight: 500, color: health.metrics.errorRate > 0.05 ? '#dc2626' : '#22c55e' }}>
+                {(health.metrics.errorRate * 100).toFixed(2)}%
               </span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0' }}>
               <span style={{ fontSize: '14px', color: '#94a3b8' }}>Avg Response Time</span>
-              <span style={{ fontSize: '16px', fontWeight: 500, color: '#f8fafc' }}>{health.metrics.avg_response_time_ms}ms</span>
+              <span style={{ fontSize: '16px', fontWeight: 500, color: '#f8fafc' }}>{health.metrics.avgResponseTime}ms</span>
             </div>
           </div>
         </div>

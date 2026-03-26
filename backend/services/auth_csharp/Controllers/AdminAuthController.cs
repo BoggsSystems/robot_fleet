@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using AuthService.Models;
 using AuthService.Services;
 using AuthService.Middleware;
@@ -29,7 +30,7 @@ public class AdminAuthController : ControllerBase
             return Unauthorized(new { error = "Invalid credentials" });
         }
 
-        if (!BCrypt.Verify(request.Password, admin.Password))
+        if (!BCrypt.Net.BCrypt.Verify(request.Password, admin.Password))
         {
             return Unauthorized(new { error = "Invalid credentials" });
         }
@@ -113,7 +114,7 @@ public class AdminAuthController : ControllerBase
             return BadRequest(new { error = "Username already exists" });
         }
 
-        var hashedPassword = BCrypt.HashPassword(request.Password);
+        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
         var newAdmin = new AdminUser
         {
             Username = request.Username,

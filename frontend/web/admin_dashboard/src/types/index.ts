@@ -20,7 +20,14 @@ export interface Client {
   id: string;
   name: string;
   status: 'active' | 'inactive' | 'suspended' | 'trial';
-  plan: 'starter' | 'professional' | 'enterprise';
+  plan: 'starter' | 'professional' | 'enterprise' | 'hobby' | 'pro' | 'business';
+  entityType?: string;
+  industry?: string;
+  email: string;
+  phone?: string;
+  taxId?: string;
+  locations?: Array<{name: string; address: string; type?: string}>;
+  fleetSize?: number;
   contact: {
     email: string;
     phone: string;
@@ -32,7 +39,7 @@ export interface Client {
     idleRobots: number;
     maintenanceRobots: number;
   };
-  warehouse: {
+  warehouse?: {
     name: string;
     location: string;
     totalArea: number;
@@ -44,7 +51,7 @@ export interface Client {
     lastActivity: string;
   };
   createdAt: string;
-  subscription: {
+  subscription?: {
     startDate: string;
     endDate: string;
     mrr: number;

@@ -3,8 +3,8 @@ import { useAuth } from '../contexts/AuthContext';
 
 const Login: React.FC = () => {
   const { login, isLoading, error: authError } = useAuth();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('admin');
+  const [password, setPassword] = useState('admin123');
   const [error, setError] = useState('');
 
   useEffect(() => {

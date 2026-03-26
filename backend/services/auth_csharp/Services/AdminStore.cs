@@ -5,24 +5,27 @@ namespace AuthService.Services;
 
 public class AdminStore
 {
-    private readonly List<AdminUser> _adminUsers = new();
-    private int _nextId = 1;
+    private readonly CosmosDbService _cosmosDbService;
 
-    public AdminStore()
+    public AdminStore(CosmosDbService cosmosDbService)
     {
-        // Initialize with default superadmin
-        _ = InitializeDefaultSuperAdminAsync();
+        _cosmosDbService = cosmosDbService;
+    }
+
+    public async Task InitializeAsync()
+    {
+        await InitializeDefaultSuperAdminAsync();
     }
 
     private async Task InitializeDefaultSuperAdminAsync()
     {
-        var existingAdmin = _adminUsers.FirstOrDefault(u => u.Username == "admin");
+        var existingAdmin = await _cosmosDbService.GetByUsernameAsync("admin");
         if (existingAdmin == null)
         {
-            var hashedPassword = BCrypt.HashPassword("admin123");
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword("admin123");
             var admin = new AdminUser
             {
-                Id = _nextId++,
+                Id = 1,
                 Username = "admin",
                 Email = "admin@robotfleet.com",
                 Password = hashedPassword,
@@ -38,45 +41,72 @@ public class AdminStore
                 CreatedAt = DateTime.UtcNow,
                 LastLogin = null
             };
-            _adminUsers.Add(admin);
-            Console.WriteLine("Default superadmin created: admin/admin123");
+            await _cosmosDbService.CreateAsync(admin);
+            Console.WriteLine("Default superadmin created in Cosmos DB: admin/admin123");
         }
+        else
+        {
+            Console.WriteLine("Default superadmin already exists in Cosmos DB");
+        }
+    }
+
+    public async Task<AdminUser?> GetByUsernameAsync(string username)
+    {
+        return await _cosmosDbService.GetByUsernameAsync(username);
     }
 
     public AdminUser? GetByUsername(string username)
     {
-        return _adminUsers.FirstOrDefault(u => u.Username == username);
+        return GetByUsernameAsync(username).GetAwaiter().GetResult();
+    }
+
+    public async Task<AdminUser?> GetByIdAsync(int id)
+    {
+        return await _cosmosDbService.GetByIdAsync(id);
     }
 
     public AdminUser? GetById(int id)
     {
-        return _adminUsers.FirstOrDefault(u => u.Id == id);
+        return GetByIdAsync(id).GetAwaiter().GetResult();
+    }
+
+    public async Task<List<AdminUser>> GetAllAsync()
+    {
+        return await _cosmosDbService.GetAllAsync();
     }
 
     public List<AdminUser> GetAll()
     {
-        return _adminUsers.ToList();
+        return GetAllAsync().GetAwaiter().GetResult();
+    }
+
+    public async Task<AdminUser> CreateAsync(AdminUser user)
+    {
+        return await _cosmosDbService.CreateAsync(user);
     }
 
     public AdminUser Create(AdminUser user)
     {
-        user.Id = _nextId++;
-        user.CreatedAt = DateTime.UtcNow;
-        _adminUsers.Add(user);
-        return user;
+        return CreateAsync(user).GetAwaiter().GetResult();
+    }
+
+    public async Task UpdateLastLoginAsync(int id)
+    {
+        await _cosmosDbService.UpdateLastLoginAsync(id);
     }
 
     public void UpdateLastLogin(int id)
     {
-        var user = _adminUsers.FirstOrDefault(u => u.Id == id);
-        if (user != null)
-        {
-            user.LastLogin = DateTime.UtcNow;
-        }
+        UpdateLastLoginAsync(id).GetAwaiter().GetResult();
+    }
+
+    public async Task<bool> UsernameExistsAsync(string username)
+    {
+        return await _cosmosDbService.UsernameExistsAsync(username);
     }
 
     public bool UsernameExists(string username)
     {
-        return _adminUsers.Any(u => u.Username == username);
+        return UsernameExistsAsync(username).GetAwaiter().GetResult();
     }
 }

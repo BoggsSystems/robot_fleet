@@ -14,7 +14,8 @@ public class JwtService
     public JwtService(IConfiguration configuration)
     {
         _configuration = configuration;
-        _adminJwtSecret = configuration["Jwt:AdminSecret"] ?? "admin-secret-key";
+        // Read from JWT_SECRET environment variable (32+ chars for HS256)
+        _adminJwtSecret = configuration["JWT_SECRET"] ?? "your-super-secret-256-bit-jwt-signing-key-minimum-32-chars";
     }
 
     public string GenerateAdminToken(AdminUser admin)
