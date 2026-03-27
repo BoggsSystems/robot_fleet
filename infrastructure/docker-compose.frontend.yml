@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # Fleet Dashboard - Main monitoring interface
+  fleet-dashboard:
+    build:
+      context: ../frontend/web/fleet_dashboard
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+      - REACT_APP_AUTH_URL=https://robotfleet-auth.kindmoss-6eac8399.eastus.azurecontainerapps.io
+      - REACT_APP_API_URL=https://robotfleet-ai.kindmoss-6eac8399.eastus.azurecontainerapps.io
+    restart: unless-stopped
+    networks:
+      - frontend-network
+
+  # Admin Dashboard - Administrative interface
+  admin-dashboard:
+    build:
+      context: ../frontend/web/admin_dashboard
+      dockerfile: Dockerfile
+    ports:
+      - "5174:80"
+    environment:
+      - NODE_ENV=production
+      - REACT_APP_AUTH_URL=https://robotfleet-auth.kindmoss-6eac8399.eastus.azurecontainerapps.io
+      - REACT_APP_API_URL=https://robotfleet-ai.kindmoss-6eac8399.eastus.azurecontainerapps.io
+    restart: unless-stopped
+    networks:
+      - frontend-network
+
+  # Cottage Client - Alternative client interface
+  cottage-client:
+    build:
+      context: ../frontend/web/admin_dashboard
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80"
+    environment:
+      - NODE_ENV=production
+      - REACT_APP_AUTH_URL=https://robotfleet-auth.kindmoss-6eac8399.eastus.azurecontainerapps.io
+      - REACT_APP_API_URL=https://robotfleet-ai.kindmoss-6eac8399.eastus.azurecontainerapps.io
+    restart: unless-stopped
+    networks:
+      - frontend-network
+
+networks:
+  frontend-network:
+    driver: bridge

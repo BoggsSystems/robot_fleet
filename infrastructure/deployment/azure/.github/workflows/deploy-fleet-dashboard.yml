@@ -1,0 +1,100 @@
+name: Deploy Fleet Dashboard to Azure
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'frontend/web/fleet_dashboard/**'
+      - 'infrastructure/deployment/azure/fleet-dashboard*'
+  workflow_dispatch:
+
+env:
+  REGISTRY: kindmoss-6eac8399.azurecr.io
+  IMAGE_NAME: fleet-dashboard
+  RESOURCE_GROUP: robot-fleet-simulator-rg
+  CONTAINER_APP_NAME: robot-fleet-dashboard
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Azure Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ secrets.ACR_USERNAME }}
+        password: ${{ secrets.ACR_PASSWORD }}
+
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./frontend/web/fleet_dashboard
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Deploy to Azure Container App
+      run: |
+        az containerapp update \
+          --name ${{ env.CONTAINER_APP_NAME }} \
+          --resource-group ${{ env.RESOURCE_GROUP }} \
+          --image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }} \
+          --set-env-vars \
+            NODE_ENV=production \
+            REACT_APP_AUTH_URL=https://robotfleet-auth.kindmoss-6eac8399.eastus.azurecontainerapps.io \
+            REACT_APP_API_URL=https://robotfleet-ai.kindmoss-6eac8399.eastus.azurecontainerapps.io
+
+    - name: Get Container App URL
+      id: app-url
+      run: |
+        URL=$(az containerapp show \
+          --name ${{ env.CONTAINER_APP_NAME }} \
+          --resource-group ${{ env.RESOURCE_GROUP }} \
+          --query properties.configuration.ingress.fqdn \
+          --output tsv)
+        echo "url=https://$URL" >> $GITHUB_OUTPUT
+
+    - name: Health Check
+      run: |
+        echo "Checking deployment at ${{ steps.app-url.outputs.url }}"
+        sleep 30
+        curl -f ${{ steps.app-url.outputs.url }} || exit 1
+
+    - name: Notify Deployment
+      if: always()
+      run: |
+        if [ $? -eq 0 ]; then
+          echo "✅ Fleet Dashboard deployed successfully!"
+          echo "🌐 Available at: ${{ steps.app-url.outputs.url }}"
+        else
+          echo "❌ Deployment failed!"
+          exit 1
+        fi

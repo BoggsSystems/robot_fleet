@@ -46,6 +46,42 @@ const Clients: React.FC = () => {
     }
   };
 
+  const handleGenerateAndCopyMagicLink = async (clientId: string, clientEmail: string) => {
+    try {
+      const response = await clientAPI.generateMagicLink(clientId);
+      
+      // Copy to clipboard
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(response.magicLinkUrl);
+      } else {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = response.magicLinkUrl;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+      
+      alert(`Magic link copied to clipboard!\n\n${response.magicLinkUrl}`);
+    } catch (err: any) {
+      alert(err.response?.data?.error || 'Failed to generate magic link');
+    }
+  };
+
+  const handleSendMagicLink = async (clientId: string, clientEmail: string) => {
+    try {
+      const response = await clientAPI.sendMagicLink(clientId);
+      alert(`Magic link sent to ${clientEmail}!`);
+    } catch (err: any) {
+      alert(err.response?.data?.error || 'Failed to send magic link');
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return { bg: '#22c55e20', text: '#22c55e' };
@@ -233,7 +269,7 @@ const Clients: React.FC = () => {
                     </span>
                   </td>
                   <td style={{ padding: '16px', textAlign: 'right' }}>
-                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
                       <Link
                         to={`/clients/${client.id}`}
                         style={{
@@ -249,12 +285,12 @@ const Clients: React.FC = () => {
                         View
                       </Link>
                       <button
-                        onClick={() => handleDeleteClient(client.id)}
+                        onClick={() => handleGenerateAndCopyMagicLink(client.id, client.email)}
                         disabled={client.status === 'suspended'}
                         style={{
                           padding: '6px 12px',
-                          backgroundColor: client.status === 'suspended' ? '#64748b20' : '#dc262620',
-                          color: client.status === 'suspended' ? '#64748b' : '#dc2626',
+                          backgroundColor: client.status === 'suspended' ? '#64748b20' : '#10b98120',
+                          color: client.status === 'suspended' ? '#64748b' : '#10b981',
                           border: 'none',
                           borderRadius: '6px',
                           fontSize: '13px',
@@ -262,7 +298,23 @@ const Clients: React.FC = () => {
                           cursor: client.status === 'suspended' ? 'not-allowed' : 'pointer'
                         }}
                       >
-                        {client.status === 'suspended' ? 'Suspended' : 'Suspend'}
+                        {client.status === 'suspended' ? 'Suspended' : 'Generate & Copy'}
+                      </button>
+                      <button
+                        onClick={() => handleSendMagicLink(client.id, client.email)}
+                        disabled={client.status === 'suspended'}
+                        style={{
+                          padding: '6px 12px',
+                          backgroundColor: client.status === 'suspended' ? '#64748b20' : '#05966920',
+                          color: client.status === 'suspended' ? '#64748b' : '#059669',
+                          border: 'none',
+                          borderRadius: '6px',
+                          fontSize: '13px',
+                          fontWeight: 500,
+                          cursor: client.status === 'suspended' ? 'not-allowed' : 'pointer'
+                        }}
+                      >
+                        {client.status === 'suspended' ? 'Suspended' : 'Send Email'}
                       </button>
                     </div>
                   </td>

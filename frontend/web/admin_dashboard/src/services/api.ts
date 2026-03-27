@@ -7,7 +7,7 @@ const AUTH_BASE_URL = process.env.REACT_APP_AUTH_URL || 'http://localhost:3001';
 
 // Create axios instance for admin API
 const adminApi: AxiosInstance = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: AUTH_BASE_URL,  // Use AUTH_BASE_URL for admin API calls too
   headers: {
     'Content-Type': 'application/json',
   },
@@ -29,6 +29,8 @@ const addAuthToken = (config: any): any => {
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  console.log('🔍 API: Making request to:', config.baseURL + config.url);
+  console.log('🔍 API: Request config:', config);
   return config;
 };
 
@@ -37,6 +39,11 @@ authApi.interceptors.request.use(addAuthToken);
 
 // Response interceptor for error handling
 const handleError = (error: any) => {
+  console.error('❌ API: Request failed:', error);
+  console.error('❌ API: Error response:', error.response);
+  console.error('❌ API: Error status:', error.response?.status);
+  console.error('❌ API: Error data:', error.response?.data);
+  
   if (error.response?.status === 401) {
     // Token expired or invalid
     Cookies.remove('adminToken');
@@ -107,7 +114,17 @@ export const clientAPI = {
     const response = await authApi.delete(`/api/admin/clients/${id}`);
     return response.data;
   },
-  
+
+  sendMagicLink: async (clientId: string) => {
+    const response = await authApi.post(`/api/admin/clients/${clientId}/send-magic-link`);
+    return response.data;
+  },
+
+  generateMagicLink: async (clientId: string) => {
+    const response = await authApi.post(`/api/admin/clients/${clientId}/generate-magic-link`);
+    return response.data;
+  },
+
   getClientFleet: async (id: string) => {
     const response = await authApi.get(`/api/admin/clients/${id}/fleet`);
     return response.data;

@@ -100,6 +100,7 @@ public class ClientStore
             existing.Fleet.TotalRobots = request.FleetSize.Value;
             existing.Fleet.IdleRobots = request.FleetSize.Value;
         }
+        if (request.MagicTokens != null) existing.MagicTokens = request.MagicTokens;
         
         existing.UpdatedAt = DateTime.UtcNow;
         

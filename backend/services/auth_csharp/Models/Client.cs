@@ -17,7 +17,18 @@ public enum ClientStatus
     active,
     trial,
     suspended,
-    inactive
+    inactive,
+    pending_setup
+}
+
+public class MagicToken
+{
+    public string Id { get; set; } = string.Empty;
+    public string ClientId { get; set; } = string.Empty;
+    public string Token { get; set; } = string.Empty;
+    public DateTime ExpiresAt { get; set; }
+    public bool IsUsed { get; set; } = false;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
 
 public class ClientLocation
@@ -51,13 +62,15 @@ public class Client
     public string Id { get; set; } = string.Empty;
 
     public string Name { get; set; } = string.Empty;
-    public ClientStatus Status { get; set; } = ClientStatus.trial;
+    public ClientStatus Status { get; set; } = ClientStatus.pending_setup;
     public ClientPlan Plan { get; set; } = ClientPlan.hobby;
     public string EntityType { get; set; } = "business";
     public string? Industry { get; set; }
     public string Email { get; set; } = string.Empty;
     public string? Phone { get; set; }
     public string? TaxId { get; set; }
+    public string? PasswordHash { get; set; }
+    public List<MagicToken> MagicTokens { get; set; } = new();
     public List<ClientLocation> Locations { get; set; } = new();
     public int FleetSize { get; set; }
     public string DeploymentPriority { get; set; } = "standard";
@@ -92,6 +105,7 @@ public class UpdateClientRequest
     public ClientStatus? Status { get; set; }
     public List<ClientLocation>? Locations { get; set; }
     public int? FleetSize { get; set; }
+    public List<MagicToken>? MagicTokens { get; set; }
 }
 
 public class ClientResponse
@@ -142,4 +156,59 @@ public class MonthlyMrr
 {
     public string Month { get; set; } = string.Empty;
     public int Mrr { get; set; }
+}
+
+// Magic Link DTOs
+public class GenerateMagicLinkRequest
+{
+    public string ClientId { get; set; } = string.Empty;
+}
+
+public class GenerateMagicLinkResponse
+{
+    public string Message { get; set; } = string.Empty;
+    public string MagicLinkUrl { get; set; } = string.Empty;
+    public string ClientId { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+}
+
+public class ValidateMagicTokenRequest
+{
+    public string Token { get; set; } = string.Empty;
+}
+
+public class ValidateMagicTokenResponse
+{
+    public string Message { get; set; } = string.Empty;
+    public string ClientId { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public bool IsValid { get; set; }
+}
+
+public class SetPasswordRequest
+{
+    public string Token { get; set; } = string.Empty;
+    public string Password { get; set; } = string.Empty;
+}
+
+public class SetPasswordResponse
+{
+    public string Message { get; set; } = string.Empty;
+    public string ClientId { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public bool Success { get; set; }
+}
+
+public class RequestPasswordResetRequest
+{
+    public string Email { get; set; } = string.Empty;
+}
+
+public class RequestPasswordResetResponse
+{
+    public string Message { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public bool Success { get; set; }
 }

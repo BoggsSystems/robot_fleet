@@ -82,3 +82,14 @@ coverage/
 *.so
 *.dll
 *.exe
+
+# Python packages
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+
+# Model files
+yolov8n.pt
+yolo*.pt
+*.onnx

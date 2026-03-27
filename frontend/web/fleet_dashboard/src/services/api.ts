@@ -2,7 +2,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { LoginCredentials, AuthResponse, TokenResponse } from '../types/auth';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+const API_BASE_URL = process.env.REACT_APP_AUTH_URL || 'https://robotfleet-auth.kindmoss-6eac8399.eastus.azurecontainerapps.io';
 
 // Create axios instance with default configuration
 const api = axios.create({
@@ -88,6 +88,40 @@ export const authService = {
 
   async setupAuth() {
     const response = await api.post('/api/auth/setup');
+    return response.data;
+  },
+
+  // Magic Link Methods
+  async validateMagicToken(token: string) {
+    const response = await axios.get(`${API_BASE_URL}/api/admin/validate-magic-token?token=${token}`);
+    return response.data;
+  },
+
+  async setPassword(token: string, password: string) {
+    const response = await axios.post(`${API_BASE_URL}/api/admin/set-password`, {
+      token,
+      password
+    });
+    return response.data;
+  },
+
+  async requestPasswordReset(email: string) {
+    const response = await axios.post(`${API_BASE_URL}/api/request-password-reset`, {
+      email
+    });
+    return response.data;
+  },
+
+  async validateResetToken(token: string) {
+    const response = await axios.get(`${API_BASE_URL}/api/reset-password?token=${token}`);
+    return response.data;
+  },
+
+  async resetPassword(token: string, password: string) {
+    const response = await axios.post(`${API_BASE_URL}/api/set-password`, {
+      token,
+      password
+    });
     return response.data;
   },
 };

@@ -4,70 +4,73 @@ services:
   # Development Environment
   cottage-client:
     build:
-      context: ./apps/cottage_client
+      context: ../frontend/web/admin_dashboard
       dockerfile: Dockerfile
     ports:
-      - "5173:5173"
-    volumes:
-      - ./apps/cottage_client:/app
-      - /app/node_modules
+      - "5173:80"
     environment:
-      - NODE_ENV=development
-      - VITE_API_URL=http://localhost:8002
-    depends_on:
-      - robot-api
+      - NODE_ENV=production
+      - REACT_APP_AUTH_URL=https://robotfleet-auth.kindmoss-6eac8399.eastus.azurecontainerapps.io
+      - REACT_APP_API_URL=https://robotfleet-ai.kindmoss-6eac8399.eastus.azurecontainerapps.io
 
   fleet-admin:
     build:
-      context: ./apps/fleet_admin
+      context: ../frontend/web/admin_dashboard
       dockerfile: Dockerfile
     ports:
-      - "5174:5174"
-    volumes:
-      - ./apps/fleet_admin:/app
-      - /app/node_modules
+      - "5174:80"
     environment:
-      - NODE_ENV=development
-      - VITE_API_URL=http://localhost:8002
-    depends_on:
-      - robot-api
+      - NODE_ENV=production
+      - REACT_APP_AUTH_URL=https://robotfleet-auth.kindmoss-6eac8399.eastus.azurecontainerapps.io
+      - REACT_APP_API_URL=https://robotfleet-ai.kindmoss-6eac8399.eastus.azurecontainerapps.io
+
+  fleet-dashboard:
+    build:
+      context: ../frontend/web/fleet_dashboard
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+      - REACT_APP_AUTH_URL=https://robotfleet-auth.kindmoss-6eac8399.eastus.azurecontainerapps.io
+      - REACT_APP_API_URL=https://robotfleet-ai.kindmoss-6eac8399.eastus.azurecontainerapps.io
 
   # Backend Services
   robot-api:
     build:
-      context: ./services/robot_api
+      context: ../services/robot_api
       dockerfile: Dockerfile
     ports:
       - "8002:8002"
     volumes:
-      - ./services/robot_api:/app
-      - ./services/data:/app/data
+      - ../services/robot_api:/app
+      - ../services/data:/app/data
     environment:
       - PYTHONPATH=/app
       - DATABASE_URL=sqlite:///app/data/robots.db
 
   fleet-control:
     build:
-      context: ./services/fleet_control
+      context: ../services/fleet_control
       dockerfile: Dockerfile
     ports:
       - "8001:8001"
     volumes:
-      - ./services/fleet_control:/app
-      - ./services/data:/app/data
+      - ../services/fleet_control:/app
+      - ../services/data:/app/data
     environment:
       - PYTHONPATH=/app
       - DATABASE_URL=sqlite:///app/data/fleet.db
 
   auth-service:
     build:
-      context: ./services/auth
+      context: ../services/auth
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
     volumes:
-      - ./services/auth:/app
-      - ./services/data:/app/data
+      - ../services/auth:/app
+      - ../services/data:/app/data
     environment:
       - PYTHONPATH=/app
       - DATABASE_URL=sqlite:///app/data/auth.db

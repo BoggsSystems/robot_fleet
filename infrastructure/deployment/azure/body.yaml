@@ -1,0 +1,9 @@
+properties:
+  configuration:
+    template:
+      containers:
+        - name: robotfleet-auth
+          image: robotfleetregistry.azurecr.io/auth-csharp:latest
+          resources:
+            cpu: 0.5
+            memory: 1Gi
