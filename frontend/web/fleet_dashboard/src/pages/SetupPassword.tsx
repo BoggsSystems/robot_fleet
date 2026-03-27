@@ -24,7 +24,17 @@ const SetupPassword: React.FC = () => {
   const validateToken = async (tokenValue: string) => {
     try {
       setIsLoading(true);
-      const response = await authService.validateMagicToken(tokenValue);
+      setError(null);
+      
+      // Add timeout to prevent infinite loading
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Request timeout')), 10000);
+      });
+      
+      const response = await Promise.race([
+        authService.validateMagicToken(tokenValue),
+        timeoutPromise
+      ]);
       
       if (response.isValid) {
         setClientInfo({
@@ -36,7 +46,8 @@ const SetupPassword: React.FC = () => {
         setError('Invalid or expired magic link');
       }
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to validate token');
+      console.error('Token validation error:', err);
+      setError(err.response?.data?.error || err.message || 'Failed to validate token');
     } finally {
       setIsLoading(false);
     }

@@ -19,11 +19,14 @@ builder.Services.AddSwaggerGen(c =>
 // Add CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy =>
+    options.AddPolicy("AllowSpecific", policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins(
+            "https://robot-fleet-admin.kindmoss-6eac8399.eastus.azurecontainerapps.io",
+            "https://robot-fleet-dashboard.kindmoss-6eac8399.eastus.azurecontainerapps.io")
               .AllowAnyMethod()
-              .AllowAnyHeader();
+              .AllowAnyHeader()
+              .AllowCredentials();
     });
 });
 
@@ -56,7 +59,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseCors("AllowAll");
+app.UseCors("AllowSpecific");
 app.UseAuthorization();
 app.MapControllers();
 

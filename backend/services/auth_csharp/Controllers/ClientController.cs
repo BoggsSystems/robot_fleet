@@ -212,13 +212,17 @@ public class ClientController : ControllerBase
                 IsUsed = false
             };
             
+            _logger.LogInformation("Generated magic token: {TokenId}, Token: {Token}, ExpiresAt: {ExpiresAt}", 
+                magicToken.Id, magicToken.Token, magicToken.ExpiresAt);
+            
             // Add to client's magic tokens
             client.MagicTokens.Add(magicToken);
             await _clientStore.UpdateAsync(client.Id, new UpdateClientRequest { MagicTokens = client.MagicTokens });
             
-            var magicLinkUrl = $"{Request.Scheme}://{Request.Host}/setup-password?token={magicToken.Token}";
+            var magicLinkUrl = $"https://robot-fleet-dashboard.kindmoss-6eac8399.eastus.azurecontainerapps.io/setup-password?token={magicToken.Token}";
             
             _logger.LogInformation("Generated magic link for client {ClientId}: {MagicLink}", id, magicLinkUrl);
+            _logger.LogInformation("DEPLOYMENT FIX APPLIED: Using fleet dashboard URL");
             
             return Ok(new GenerateMagicLinkResponse
             {
@@ -264,7 +268,7 @@ public class ClientController : ControllerBase
             client.MagicTokens.Add(magicToken);
             await _clientStore.UpdateAsync(client.Id, new UpdateClientRequest { MagicTokens = client.MagicTokens });
             
-            var magicLinkUrl = $"{Request.Scheme}://{Request.Host}/setup-password?token={magicToken.Token}";
+            var magicLinkUrl = $"https://robot-fleet-dashboard.kindmoss-6eac8399.eastus.azurecontainerapps.io/setup-password?token={magicToken.Token}";
             
             // TODO: Send email with magic link
             // For now, just return the link
@@ -349,14 +353,35 @@ public class ClientController : ControllerBase
             }
             
             // Find client with valid magic token
+            _logger.LogInformation("Searching for token: {Token}", request.Token);
             var clients = await _clientStore.GetAllAsync();
+            _logger.LogInformation("Total clients in database: {Count}", clients.Count);
+            
+            // Log all magic tokens for debugging
+            foreach (var c in clients)
+            {
+                _logger.LogInformation("Client {ClientId} has {TokenCount} magic tokens", c.Id, c.MagicTokens?.Count ?? 0);
+                if (c.MagicTokens != null)
+                {
+                    foreach (var t in c.MagicTokens)
+                    {
+                        _logger.LogInformation("Token: {Token}, Used: {Used}, Expires: {Expires}, CurrentUTC: {CurrentUTC}", 
+                            t.Token?.Substring(0, Math.Min(10, t.Token?.Length ?? 0)) + "...", 
+                            t.IsUsed, t.ExpiresAt, DateTime.UtcNow);
+                    }
+                }
+            }
+            
             var client = clients.FirstOrDefault(c => c.MagicTokens.Any(t => 
                 t.Token == request.Token && 
                 !t.IsUsed && 
                 t.ExpiresAt > DateTime.UtcNow));
             
+            _logger.LogInformation("Found client: {ClientId}", client?.Id ?? "null");
+            
             if (client == null)
             {
+                _logger.LogWarning("Token validation failed - token not found, used, or expired");
                 return BadRequest(new SetPasswordResponse
                 {
                     Message = "Invalid or expired token",

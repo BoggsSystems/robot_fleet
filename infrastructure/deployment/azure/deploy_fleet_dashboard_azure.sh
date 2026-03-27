@@ -77,8 +77,8 @@ az containerapp create \
     --registry-password ${ACR_PASSWORD} \
     --env-vars \
         NODE_ENV=production \
-        REACT_APP_AUTH_URL=https://robotfleet-auth.eastus.azurecontainerapps.io \
-        REACT_APP_API_URL=https://robotfleet-ai.eastus.azurecontainerapps.io
+        REACT_APP_AUTH_URL=https://robotfleet-auth.kindmoss-6eac8399.eastus.azurecontainerapps.io \
+        REACT_APP_API_URL=https://robotfleet-ai.kindmoss-6eac8399.eastus.azurecontainerapps.io
 
 if [ $? -ne 0 ]; then
     echo "❌ Container App deployment failed"

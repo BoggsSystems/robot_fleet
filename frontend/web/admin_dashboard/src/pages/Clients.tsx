@@ -1,8 +1,105 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Client } from '../types';
 import { clientAPI } from '../services/api';
+import { Client } from '../types';
 import CreateClientWizard from '../components/CreateClientWizard';
+
+// Simple notification function
+const showNotification = (message: string, type: 'success' | 'error' | 'info') => {
+  // Create notification container
+  const notification = document.createElement('div');
+  const bgColor = type === 'success' ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 
+                   type === 'error' ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' : 
+                   'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)';
+  const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+  const title = type === 'success' ? 'Success!' : type === 'error' ? 'Error!' : 'Info!';
+  
+  // Set styles directly instead of using innerHTML
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: ${bgColor};
+    color: white;
+    padding: 16px 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 300px;
+    max-width: 400px;
+    transform: translateX(500px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  `;
+  
+  // Create icon element
+  const iconElement = document.createElement('span');
+  iconElement.style.cssText = 'font-size: 20px;';
+  iconElement.textContent = icon;
+  
+  // Create content container
+  const contentDiv = document.createElement('div');
+  
+  // Create title element
+  const titleElement = document.createElement('div');
+  titleElement.style.cssText = 'font-size: 14px; font-weight: 600; margin-bottom: 4px;';
+  titleElement.textContent = title;
+  
+  // Create message element
+  const messageElement = document.createElement('div');
+  messageElement.style.cssText = 'font-size: 13px; opacity: 0.9;';
+  messageElement.textContent = message;
+  
+  // Create close button
+  const closeButton = document.createElement('button');
+  closeButton.style.cssText = `
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 6px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+    font-size: 16px;
+    transition: background 0.2s;
+  `;
+  closeButton.textContent = '×';
+  closeButton.onclick = () => notification.remove();
+  
+  // Assemble the notification
+  contentDiv.appendChild(titleElement);
+  contentDiv.appendChild(messageElement);
+  notification.appendChild(iconElement);
+  notification.appendChild(contentDiv);
+  notification.appendChild(closeButton);
+  
+  // Add to DOM
+  document.body.appendChild(notification);
+  
+  // Animate in
+  setTimeout(() => {
+    notification.style.transform = 'translateX(0)';
+    notification.style.opacity = '1';
+  }, 10);
+  
+  // Auto-remove after 3 seconds
+  setTimeout(() => {
+    if (notification.parentElement) {
+      notification.style.transform = 'translateX(500px)';
+      notification.style.opacity = '0';
+      setTimeout(() => notification.remove(), 300);
+    }
+  }, 3000);
+};
 
 const Clients: React.FC = () => {
   const [clients, setClients] = useState<Client[]>([]);
@@ -67,18 +164,71 @@ const Clients: React.FC = () => {
         document.body.removeChild(textArea);
       }
       
-      alert(`Magic link copied to clipboard!\n\n${response.magicLinkUrl}`);
+      // Show elegant success message
+      showNotification('Magic link copied to clipboard', 'success');
+      
+      const successMessage = document.createElement('div');
+      successMessage.innerHTML = `
+        <div style="
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+          color: white;
+          padding: 16px 20px;
+          border-radius: 12px;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+          z-index: 1000;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          min-width: 300px;
+          max-width: 400px;
+          animation: slideIn 0.3s ease-out;
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+        ">
+          <span style="font-size: 20px;">✅</span>
+          <div>
+            <div style="font-size: 14px; font-weight: 600; margin-bottom: 4px;">Success!</div>
+            <div style="font-size: 13px; opacity: 0.9;">Magic link copied to clipboard</div>
+          </div>
+          <button onclick="this.parentElement.remove()" style="
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 6px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            font-size: 16px;
+            transition: background 0.2s;
+          ">×</button>
+        </div>
+      `;
+      document.body.appendChild(successMessage);
+      
+      // Auto-remove after 3 seconds
+      setTimeout(() => {
+        if (successMessage.parentElement) {
+          successMessage.remove();
+        }
+      }, 3000);
+      
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Failed to generate magic link');
+      showNotification(err.response?.data?.error || 'Failed to generate magic link', 'error');
     }
   };
 
   const handleSendMagicLink = async (clientId: string, clientEmail: string) => {
     try {
       const response = await clientAPI.sendMagicLink(clientId);
-      alert(`Magic link sent to ${clientEmail}!`);
+      showNotification(`Magic link sent to ${clientEmail}`, 'success');
     } catch (err: any) {
-      alert(err.response?.data?.error || 'Failed to send magic link');
+      showNotification(err.response?.data?.error || 'Failed to send magic link', 'error');
     }
   };
 
