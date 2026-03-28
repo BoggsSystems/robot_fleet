@@ -14,14 +14,26 @@ import ForgotPassword from './pages/ForgotPassword';
 import './styles/global.css';
 
 const AppRoutes: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user, isLoading } = useAuth();
+  
+  console.log('🔍 DEBUG: AppRoutes rendering');
+  console.log('🔍 DEBUG: Auth state:', { isAuthenticated, isLoading, user });
+  console.log('🔍 DEBUG: Current URL:', window.location.href);
+
+  if (isLoading) {
+    console.log('🔍 DEBUG: Still loading auth state...');
+    return <div>Loading...</div>;
+  }
+
+  console.log('🔍 DEBUG: Auth state loaded, setting up routes');
 
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/setup-password" element={<SetupPassword />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route
+        path="/setup-password"
+        element={<SetupPassword />}
+      />
       <Route
         path="/dashboard"
         element={
@@ -31,26 +43,10 @@ const AppRoutes: React.FC = () => {
         }
       />
       <Route
-        path="/fleet"
-        element={
-          <ProtectedRoute>
-            <Fleet />
-          </ProtectedRoute>
-        }
-      />
-      <Route
         path="/locations"
         element={
           <ProtectedRoute>
             <Locations />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/analytics"
-        element={
-          <ProtectedRoute>
-            <Analytics />
           </ProtectedRoute>
         }
       />
@@ -65,7 +61,12 @@ const AppRoutes: React.FC = () => {
       <Route
         path=""
         element={
-          isAuthenticated ? <Navigate to="/dashboard" /> : <Navigate to="/login" />
+          (() => {
+            console.log('🔍 DEBUG: Default route check - isAuthenticated:', isAuthenticated);
+            const destination = isAuthenticated ? '/dashboard' : '/login';
+            console.log('🔍 DEBUG: Navigating to:', destination);
+            return <Navigate to={destination} />;
+          })()
         }
       />
       <Route path="*" element={<Navigate to="/" />} />

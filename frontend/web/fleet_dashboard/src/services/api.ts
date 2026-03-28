@@ -66,8 +66,17 @@ api.interceptors.response.use(
 
 export const authService = {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const response = await api.post('/api/auth/login', credentials);
-    return response.data;
+    console.log('🔍 DEBUG: Auth service login called with:', credentials);
+    console.log('🔍 DEBUG: API base URL:', API_BASE_URL);
+    try {
+      const response = await api.post('/api/auth/login', credentials);
+      console.log('🔍 DEBUG: Login response:', response.data);
+      return response.data;
+    } catch (error: any) {
+      console.log('🔍 DEBUG: Login error:', error);
+      console.log('🔍 DEBUG: Login error response:', error.response?.data);
+      throw error;
+    }
   },
 
   async logout(refreshToken: string): Promise<void> {

@@ -97,18 +97,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [validateToken]);
 
   const login = useCallback(async (username: string, password: string) => {
+    console.log('🔍 DEBUG: AuthContext login called');
+    console.log('🔍 DEBUG: Username:', username);
+    console.log('🔍 DEBUG: Password length:', password ? password.length : 'empty');
+    
     dispatch({ type: 'LOGIN_START' });
 
     try {
+      console.log('🔍 DEBUG: Calling authService.login...');
       const data = await authService.login({ username, password });
+      console.log('🔍 DEBUG: Login response received:', data);
+      console.log('🔍 DEBUG: Response structure:', {
+        hasTokens: !!data.tokens,
+        hasUser: !!data.user,
+        tokenKeys: data.tokens ? Object.keys(data.tokens) : [],
+        userKeys: data.user ? Object.keys(data.user) : []
+      });
       
       // Store tokens
+      console.log('🔍 DEBUG: Storing tokens in cookies...');
       Cookies.set('accessToken', data.tokens.accessToken, { expires: 1/24 }); // 1 hour
       Cookies.set('refreshToken', data.tokens.refreshToken, { expires: 7 }); // 7 days
-
+      console.log('🔍 DEBUG: Tokens stored successfully');
+      
+      console.log('🔍 DEBUG: Dispatching LOGIN_SUCCESS with user:', data.user);
       dispatch({ type: 'LOGIN_SUCCESS', payload: data.user });
       toast.success('Login successful!');
+      console.log('🔍 DEBUG: Login process completed successfully');
     } catch (error: any) {
+      console.log('🔍 DEBUG: Login failed with error:', error);
+      console.log('🔍 DEBUG: Error response data:', error.response?.data);
+      console.log('🔍 DEBUG: Error status:', error.response?.status);
+      console.log('🔍 DEBUG: Error message:', error.message);
+      
       const errorMessage = error.response?.data?.error || 'Login failed';
       dispatch({ type: 'LOGIN_FAILURE', payload: errorMessage });
       toast.error(errorMessage);

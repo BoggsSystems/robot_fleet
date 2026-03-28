@@ -62,15 +62,22 @@ const CreateClientWizard: React.FC<CreateClientWizardProps> = ({ isOpen, onClose
   const [data, setData] = useState<WizardData>({
     industry: null,
     entityType: 'business',
-    name: '',
-    email: '',
-    phone: '',
-    taxId: '',
-    locations: [{ name: '', address: '', type: 'primary', classification: 'indoor', size: '', operatingHours: '24/7' }],
-    plan: 'pro',
-    fleetSize: 1,
-    deploymentPriority: 'standard',
-    integrations: [],
+    name: 'Advanced Automation Solutions Inc',
+    email: 'demo@automation-solutions.tech',
+    phone: '+1-888-999-1234',
+    taxId: '98-7654321',
+    locations: [{ 
+      name: 'Primary Manufacturing Hub', 
+      address: '456 Innovation Drive, Austin, TX 78701', 
+      type: 'primary', 
+      classification: 'indoor', 
+      size: '75,000 sq ft', 
+      operatingHours: '24/7' 
+    }],
+    plan: 'business',
+    fleetSize: 15,
+    deploymentPriority: 'expedited',
+    integrations: ['api_access', 'building_management'],
   });
 
   const totalSteps = 5;

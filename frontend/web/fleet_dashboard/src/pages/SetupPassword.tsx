@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { authService } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 
 const SetupPassword: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [token, setToken] = useState<string>('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -12,6 +14,8 @@ const SetupPassword: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [clientInfo, setClientInfo] = useState<any>(null);
   const [isSettingPassword, setIsSettingPassword] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [passwordSetSuccess, setPasswordSetSuccess] = useState(false);
 
   useEffect(() => {
     const tokenFromUrl = searchParams.get('token');
@@ -70,18 +74,44 @@ const SetupPassword: React.FC = () => {
       setIsSettingPassword(true);
       setError(null);
       
+      console.log('🔍 DEBUG: Setting password with token:', token);
       const response = await authService.setPassword(token, password);
+      console.log('🔍 DEBUG: Set password response:', response);
       
       if (response.success) {
-        // Redirect to login page with success message
-        navigate('/login?message=' + encodeURIComponent('Password set successfully! You can now login with your email and password.'));
+        console.log('🔍 DEBUG: Password set successfully, client info:', response);
+        setPasswordSetSuccess(true);
+        setShowSuccessModal(true);
       } else {
+        console.log('🔍 DEBUG: Password set failed:', response);
         setError('Failed to set password');
       }
     } catch (err: any) {
+      console.log('🔍 DEBUG: Set password error:', err);
       setError(err.response?.data?.error || 'Failed to set password');
     } finally {
       setIsSettingPassword(false);
+    }
+  };
+
+  const handleSuccessModalConfirm = async () => {
+    console.log('🔍 DEBUG: User confirmed success modal, attempting login...');
+    
+    try {
+      // Auto-login the user after successful password setup
+      console.log('🔍 DEBUG: Attempting login with email:', clientInfo?.email);
+      await login(clientInfo.email, password);
+      console.log('🔍 DEBUG: Login successful, redirecting to dashboard...');
+      
+      // Redirect directly to dashboard after successful login
+      navigate('/dashboard');
+    } catch (loginErr: any) {
+      console.log('🔍 DEBUG: Login failed:', loginErr);
+      console.log('🔍 DEBUG: Login error details:', loginErr.response?.data);
+      
+      // Fallback to login if auto-login fails
+      console.log('🔍 DEBUG: Falling back to login page...');
+      navigate('/login?message=' + encodeURIComponent('Password set successfully! Please login to continue.'));
     }
   };
 
@@ -336,6 +366,85 @@ const SetupPassword: React.FC = () => {
           </button>
         </form>
       </div>
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            backgroundColor: 'white',
+            borderRadius: '12px',
+            padding: '32px',
+            maxWidth: '400px',
+            width: '90%',
+            textAlign: 'center',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+          }}>
+            <div style={{
+              width: '64px',
+              height: '64px',
+              backgroundColor: '#10b981',
+              borderRadius: '50%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              margin: '0 auto 24px'
+            }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            
+            <h2 style={{
+              fontSize: '24px',
+              fontWeight: 700,
+              color: '#111827',
+              marginBottom: '12px',
+              margin: '0 0 12px 0'
+            }}>
+              Password Set Successfully!
+            </h2>
+            
+            <p style={{
+              fontSize: '16px',
+              color: '#6b7280',
+              lineHeight: '1.5',
+              marginBottom: '32px',
+              margin: '0 0 32px 0'
+            }}>
+              Your password has been set successfully. You'll now be taken to your dashboard where you can start managing your robot fleet.
+            </p>
+            
+            <button
+              onClick={handleSuccessModalConfirm}
+              style={{
+                width: '100%',
+                padding: '14px 24px',
+                backgroundColor: '#3b82f6',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '16px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              Take Me to Dashboard
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
